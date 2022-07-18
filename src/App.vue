@@ -1,20 +1,10 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
-// export default {
-//   name: 'app',
-//   components: {
-//     HelloWorld
-//   }
-//   }
-// const HelloWorld = HelloWorld()
+import Menu from './views/Menu.vue';
 </script>
 
 <template>
- <div id="app">
-    <!-- <HelloWorld /> -->
- </div>
-  
+    <RouterView />
 </template>
 
 <style scoped>
