@@ -7,7 +7,7 @@
     <!-- <h1>Create Pack</h1> -->
     <router-link :to="'/'">Back</router-link>
     <div class="tabelQuestionCreate">
-        aa
+        a
     </div>
 </div>
 </template>
