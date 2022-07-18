@@ -1,1 +1,0 @@
-import{H as t,z as e,e as s,K as r,t as o,d as n,o as l,R as u}from"./index.bc83d222.js";const d={},i=t("h1",null,"Create Pack",-1),c=e("Back");function f(k,m){const a=r("router-link");return o(),n("div",null,[i,l(a,{to:"/"},{default:u(()=>[c]),_:1})])}var v=s(d,[["render",f]]);export{v as default};

@@ -1,1 +1,0 @@
-import{H as t,z as e,e as s,K as r,t as o,d as n,o as l,R as d}from"./index.bc83d222.js";const u={},i=t("h1",null,"Create Game",-1),c=e("Back");function f(m,k){const a=r("router-link");return o(),n("div",null,[i,l(a,{to:"/"},{default:d(()=>[c]),_:1})])}var v=s(u,[["render",f]]);export{v as default};

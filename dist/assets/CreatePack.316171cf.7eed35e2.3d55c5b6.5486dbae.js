@@ -1,1 +1,0 @@
-import{H as s,K as r,s as t,Z as e,r as o,y as n,o as l,j as u}from"./index.a0e330cc.js";const c={},i=s("h1",null,"Create Pack",-1),d=r("Back");function f(k,m){const a=e("router-link");return o(),n("div",null,[i,l(a,{to:"/"},{default:u(()=>[d]),_:1})])}var j=t(c,[["render",f]]);export{j as default};
