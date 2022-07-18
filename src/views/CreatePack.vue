@@ -3,12 +3,21 @@
 </script>
 
 <template>
-<div>
-    <h1>Create Pack</h1>
+<div class="createPacke">
+    <!-- <h1>Create Pack</h1> -->
     <router-link :to="'/'">Back</router-link>
+    <div class="tabelQuestionCreate">
+        aa
+    </div>
 </div>
 </template>
 
-<style>
-
+<style scoped>
+.tabelQuestionCreate{
+    width: 90vw;
+    height: 90vh;
+    display: grid;
+    grid-template-columns: repeat(10 1fr);
+    grid-template-rows: repeat(8 1fr);
+}
 </style>

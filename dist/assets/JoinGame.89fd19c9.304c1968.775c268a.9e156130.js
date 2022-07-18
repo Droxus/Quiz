@@ -1,0 +1,1 @@
+import{H as s,K as r,s as t,Z as o,r as e,y as n,o as u,j as l}from"./index.a0e330cc.js";const i={},c=s("h1",null,"Join Game",-1),f=r("Back");function d(m,k){const a=o("router-link");return e(),n("div",null,[c,u(a,{to:"/"},{default:l(()=>[f]),_:1})])}var j=t(i,[["render",d]]);export{j as default};

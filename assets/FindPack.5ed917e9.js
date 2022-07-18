@@ -1,1 +1,0 @@
-import{_ as t,r as o,o as a,c,a as n,w as r,b as s,d as _}from"./index.87caa4c8.js";const d={},l=s("h1",null,"Find Pack",-1),i=_("Back");function u(f,k){const e=o("router-link");return a(),c("div",null,[l,n(e,{to:"/"},{default:r(()=>[i]),_:1})])}var p=t(d,[["render",u]]);export{p as default};
