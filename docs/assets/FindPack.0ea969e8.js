@@ -1,0 +1,1 @@
+import{_ as t,r as o,o as c,c as n,a,w as s,b as r,d as _}from"./index.3247f0af.js";const d={},l=r("h1",null,"Find Pack",-1),i=_("Back");function u(f,k){const e=o("router-link");return c(),n("div",null,[l,a(e,{to:"/"},{default:s(()=>[i]),_:1})])}const p=t(d,[["render",u]]);export{p as default};

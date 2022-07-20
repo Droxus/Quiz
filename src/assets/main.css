@@ -20,3 +20,125 @@ a,
     background-color: hsla(160, 100%, 37%, 0.2);
   }
 }
+/*                    Create Pack                   */
+#questionDone{
+  background: transparent;
+  border: none;
+  border-top: 1px solid grey;
+}
+#fileUploadBlock{
+  width:100%;
+  height:100%;
+  display:flex;
+  place-items: center;
+  flex-wrap: wrap;
+}
+#fileDropInp{
+  height: 30%;
+  background: transparent;
+  border: none;
+}
+#questionInputArea{
+  resize: none;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid grey;
+  outline: none;
+  width: 100%;
+  font-size: 24px;
+  color: white;
+  padding: 5%;
+}
+#questionInputArea::selection{
+  color: black;
+}
+#answerInputArea{
+  resize: none;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid grey;
+  outline: none;
+  width: 100%;
+  font-size: 24px;
+  color: white;
+  padding: 5%;
+}
+#questionInputArea::selection{
+  color: black;
+}
+.category{
+  /* background: red !important; */
+  
+}
+.points{
+  
+}
+.invisible{
+  display: none;
+}
+#bgBlur{
+  z-index: 0;
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  backdrop-filter: blur(4px) brightness(0.7);
+}
+#createPacke{
+  width: 100vw;
+  height: 100vh;
+}
+.tabelQuestionCreate{
+  margin: 5vh 2vw;
+  width: 96vw;
+  height: 76vh;
+  display: grid;
+  grid-template-columns: repeat(6, 16vw);
+  grid-template-rows: repeat(8, 9.5vh);
+}
+
+.tabelQuestionCreate > * {
+  border: 1px solid black;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  font-size: 24px;
+  text-align: center;
+  color: rgb(70, 70, 70);
+  font-weight: bold;
+  font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  place-items: center;
+  place-content: center;
+}
+#makeQuestion{
+  grid-template-columns: 100%;
+  grid-template-rows: 50% 15% 25% 10%;
+  z-index: 2;
+  display: none;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: rgb(95, 104, 104);
+  position: absolute;
+  min-width: 40vw;
+  min-height: 60vh;
+}
+@media screen and (max-device-width: 1024px) {
+  .tabelQuestionCreate > * {
+      font-size: 12px;
+  }
+  #makeQuestion{
+      min-width: 60vw;
+  }
+}
+@media screen and (min-device-width: 1024px) {
+  .tabelQuestionCreate > * {
+      font-size: 24px;
+  }
+      #makeQuestion{
+      min-width: 40vw;
+  }
+}
