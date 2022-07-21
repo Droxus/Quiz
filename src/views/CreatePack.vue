@@ -68,7 +68,7 @@
     </footer>
     <div id="makeQuestion">
                     <textarea id="questionInputArea" rows="12" placeholder="write question here"></textarea>
-                    <textarea id="answerInputArea" rows="4" placeholder="write answer here"></textarea>
+                    <textarea id="answerInputArea" rows="2" placeholder="write answer here"></textarea>
         <form method="post" enctype="multipart/form-data">
             <div id="fileUploadBlock">
                 <label for="file">Choose file to upload</label>
@@ -86,8 +86,6 @@
 
 <script setup>
 let currentInputPick, round = 1
-// let table = document.getElementById('createPacke').getElementsByClassName('tabelQuestionCreate')[0]
-// console.log(table)
 let pack = {
     rounds: []
 }
@@ -216,7 +214,6 @@ function prevRound(){
     round--
     round = Math.max(1, round)
     document.getElementById('roundNumber').innerText = `Round ${round}`
-    console.log(Array.from(document.getElementById('createPacke').getElementsByTagName('main')[0].getElementsByClassName('tabelQuestionCreate')).length)
     if (document.getElementById('createPacke').getElementsByTagName('main')[0].getElementsByClassName('tabelQuestionCreate').length > 1){
         document.getElementById('createPacke').getElementsByTagName('main')[0].getElementsByClassName('tabelQuestionCreate')[round].style.display = 'none'
     }
