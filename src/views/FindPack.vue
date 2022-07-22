@@ -41,7 +41,7 @@
                 </div>
             </div>
 
-            <div class="pack">
+            <div class="pack" @click="onPack()">
                 <img class="packStar" src="/img/star.png" alt="star">
                 <label class="packName">Pack Name</label>
                 <label class="packAuthor">Author</label>
@@ -73,7 +73,7 @@
                     <button @click="nextRound($event)">></button>
                 </div>
             </div>
-            <div class="pack">
+            <div class="pack" @click="onPack()">
                 <img class="packStar" src="/img/star.png" alt="star">
                 <label class="packName">Pack Name</label>
                 <label class="packAuthor">Author</label>
@@ -105,7 +105,7 @@
                     <button @click="nextRound($event)">></button>
                 </div>
             </div>
-            <div class="pack">
+            <div class="pack" @click="onPack()">
                 <img class="packStar" src="/img/star.png" alt="star">
                 <label class="packName">Pack Name</label>
                 <label class="packAuthor">Author</label>
@@ -137,7 +137,7 @@
                     <button @click="nextRound($event)">></button>
                 </div>
             </div>
-            <div class="pack">
+            <div class="pack" @click="onPack()">
                 <img class="packStar" src="/img/star.png" alt="star">
                 <label class="packName">Pack Name</label>
                 <label class="packAuthor">Author</label>
@@ -169,7 +169,7 @@
                     <button @click="nextRound($event)">></button>
                 </div>
             </div>
-            <div class="pack">
+            <div class="pack" @click="onPack()">
                 <img class="packStar" src="/img/star.png" alt="star">
                 <label class="packName">Pack Name</label>
                 <label class="packAuthor">Author</label>
@@ -201,7 +201,7 @@
                     <button @click="nextRound($event)">></button>
                 </div>
             </div>
-            <div class="pack">
+            <div class="pack" @click="onPack()">
                 <img class="packStar" src="/img/star.png" alt="star">
                 <label class="packName">Pack Name</label>
                 <label class="packAuthor">Author</label>
@@ -233,7 +233,7 @@
                     <button @click="nextRound($event)">></button>
                 </div>
             </div>
-            <div class="pack">
+            <div class="pack" @click="onPack()">
                 <img class="packStar" src="/img/star.png" alt="star">
                 <label class="packName">Pack Name</label>
                 <label class="packAuthor">Author</label>
@@ -265,7 +265,7 @@
                     <button @click="nextRound($event)">></button>
                 </div>
             </div>
-            <div class="pack">
+            <div class="pack" @click="onPack()">
                 <img class="packStar" src="/img/star.png" alt="star">
                 <label class="packName">Pack Name</label>
                 <label class="packAuthor">Author</label>
@@ -337,38 +337,6 @@ body{
     grid-template-areas: "packStar packName packAuthor"
     "packStar packCategories packCategories";
 }
-.packCategoriesBlock{
-    grid-area: packCategories;
-    display: grid;
-    grid-template-columns: 10% 80% 10%;
-}
-.packStar{
-    grid-area: packStar;
-    align-self: center;
-    justify-self: start;
-    margin-left: 10%;
-}
-.packName{
-    grid-area: packName;
-}
-.packAuthor{
-    grid-area: packAuthor;
-}
-.categoriesRoundBlock{
-    display: grid;
-    grid-template-rows: 30% 70%;
-}
-.packCategoriesLbl{
-    height: 20px;
-    margin: 0 2%;
-}
-.packCategories{
-    display: flex;
-    flex-wrap: wrap;
-}
-.roundOfCategories{
-    text-align: center;
-}
 #packQuestionForm{
     display: none;
     position: absolute;
@@ -380,6 +348,7 @@ body{
 </style>
 <script setup>
 function nextRound(event){
+    event.stopImmediatePropagation()
     let index = Array.from(event.target.parentElement.getElementsByClassName('categoriesRoundBlock')[0].getElementsByClassName('packCategories')).findIndex(element => element.style.display !== 'none')
     if ((index+1) < Array.from(event.target.parentElement.getElementsByClassName('categoriesRoundBlock')[0].getElementsByClassName('packCategories')).length){
         event.target.parentElement.getElementsByClassName('categoriesRoundBlock')[0].getElementsByClassName('packCategories')[index].style.display = 'none'
@@ -388,6 +357,7 @@ function nextRound(event){
     }
 }
 function prevRound(event){
+    event.stopImmediatePropagation()
     let index = Array.from(event.target.parentElement.getElementsByClassName('categoriesRoundBlock')[0].getElementsByClassName('packCategories')).findIndex(element => element.style.display !== 'none')
     if (index > 0){
         event.target.parentElement.getElementsByClassName('categoriesRoundBlock')[0].getElementsByClassName('packCategories')[index].style.display = 'none'
