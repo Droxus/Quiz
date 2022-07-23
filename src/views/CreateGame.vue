@@ -83,7 +83,7 @@
         <label>Voice</label>
     </div>
         <div>
-        <label>Code</label>
+        <label>Invited</label>
         <label class="switch">
         <input type="checkbox">
         <span class="slider round"></span>

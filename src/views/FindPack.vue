@@ -8,7 +8,7 @@
     </header>
     <main>
         <div id="packsBlock">
-            <div class="pack" @click="onPack()">
+            <!-- <div class="pack" @click="onPack()">
                 <img class="packStar" src="/img/star.png" alt="star">
                 <label class="packName">Pack Name</label>
                 <label class="packAuthor">Author</label>
@@ -39,264 +39,8 @@
                     </div>
                     <button @click="nextRound($event)">></button>
                 </div>
-            </div>
-
-            <div class="pack" @click="onPack()">
-                <img class="packStar" src="/img/star.png" alt="star">
-                <label class="packName">Pack Name</label>
-                <label class="packAuthor">Author</label>
-                <div class="packCategoriesBlock">
-                    <button @click="prevRound($event)">&lt</button>
-                    <div class="categoriesRoundBlock">
-                        <label class="roundOfCategories">Round 1</label>
-                        <div class="packCategories">
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                        </div>
-                            <div class="packCategories" style="display: none;">
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                        </div>
-                    </div>
-                    <button @click="nextRound($event)">></button>
-                </div>
-            </div>
-            <div class="pack" @click="onPack()">
-                <img class="packStar" src="/img/star.png" alt="star">
-                <label class="packName">Pack Name</label>
-                <label class="packAuthor">Author</label>
-                <div class="packCategoriesBlock">
-                    <button @click="prevRound($event)">&lt</button>
-                    <div class="categoriesRoundBlock">
-                        <label class="roundOfCategories">Round 1</label>
-                        <div class="packCategories">
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                        </div>
-                            <div class="packCategories" style="display: none;">
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                        </div>
-                    </div>
-                    <button @click="nextRound($event)">></button>
-                </div>
-            </div>
-            <div class="pack" @click="onPack()">
-                <img class="packStar" src="/img/star.png" alt="star">
-                <label class="packName">Pack Name</label>
-                <label class="packAuthor">Author</label>
-                <div class="packCategoriesBlock">
-                    <button @click="prevRound($event)">&lt</button>
-                    <div class="categoriesRoundBlock">
-                        <label class="roundOfCategories">Round 1</label>
-                        <div class="packCategories">
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                        </div>
-                            <div class="packCategories" style="display: none;">
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                        </div>
-                    </div>
-                    <button @click="nextRound($event)">></button>
-                </div>
-            </div>
-            <div class="pack" @click="onPack()">
-                <img class="packStar" src="/img/star.png" alt="star">
-                <label class="packName">Pack Name</label>
-                <label class="packAuthor">Author</label>
-                <div class="packCategoriesBlock">
-                    <button @click="prevRound($event)">&lt</button>
-                    <div class="categoriesRoundBlock">
-                        <label class="roundOfCategories">Round 1</label>
-                        <div class="packCategories">
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                        </div>
-                            <div class="packCategories" style="display: none;">
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                        </div>
-                    </div>
-                    <button @click="nextRound($event)">></button>
-                </div>
-            </div>
-            <div class="pack" @click="onPack()">
-                <img class="packStar" src="/img/star.png" alt="star">
-                <label class="packName">Pack Name</label>
-                <label class="packAuthor">Author</label>
-                <div class="packCategoriesBlock">
-                    <button @click="prevRound($event)">&lt</button>
-                    <div class="categoriesRoundBlock">
-                        <label class="roundOfCategories">Round 1</label>
-                        <div class="packCategories">
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                        </div>
-                            <div class="packCategories" style="display: none;">
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                        </div>
-                    </div>
-                    <button @click="nextRound($event)">></button>
-                </div>
-            </div>
-            <div class="pack" @click="onPack()">
-                <img class="packStar" src="/img/star.png" alt="star">
-                <label class="packName">Pack Name</label>
-                <label class="packAuthor">Author</label>
-                <div class="packCategoriesBlock">
-                    <button @click="prevRound($event)">&lt</button>
-                    <div class="categoriesRoundBlock">
-                        <label class="roundOfCategories">Round 1</label>
-                        <div class="packCategories">
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                        </div>
-                            <div class="packCategories" style="display: none;">
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                        </div>
-                    </div>
-                    <button @click="nextRound($event)">></button>
-                </div>
-            </div>
-            <div class="pack" @click="onPack()">
-                <img class="packStar" src="/img/star.png" alt="star">
-                <label class="packName">Pack Name</label>
-                <label class="packAuthor">Author</label>
-                <div class="packCategoriesBlock">
-                    <button @click="prevRound($event)">&lt</button>
-                    <div class="categoriesRoundBlock">
-                        <label class="roundOfCategories">Round 1</label>
-                        <div class="packCategories">
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                        </div>
-                            <div class="packCategories" style="display: none;">
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                        </div>
-                    </div>
-                    <button @click="nextRound($event)">></button>
-                </div>
-            </div>
-            <div class="pack" @click="onPack()">
-                <img class="packStar" src="/img/star.png" alt="star">
-                <label class="packName">Pack Name</label>
-                <label class="packAuthor">Author</label>
-                <div class="packCategoriesBlock">
-                    <button @click="prevRound($event)">&lt</button>
-                    <div class="categoriesRoundBlock">
-                        <label class="roundOfCategories">Round 1</label>
-                        <div class="packCategories">
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                        </div>
-                            <div class="packCategories" style="display: none;">
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                        </div>
-                    </div>
-                    <button @click="nextRound($event)">></button>
-                </div>
-            </div>
+            </div> -->
+            <!-- <packForFind v-for="kek of firebase.data().kekw"/> -->
         </div>
     </main> 
 
@@ -347,6 +91,12 @@ body{
 }
 </style>
 <script setup>
+import firebase from '../firebase.js'
+let packs = firebase.data().getData().then(() => {console.log(packs)})
+
+function showPacks(){
+    // for (const pack  )
+}
 function nextRound(event){
     event.stopImmediatePropagation()
     let index = Array.from(event.target.parentElement.getElementsByClassName('categoriesRoundBlock')[0].getElementsByClassName('packCategories')).findIndex(element => element.style.display !== 'none')

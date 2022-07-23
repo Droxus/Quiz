@@ -4,8 +4,8 @@
 <div id="createPacke" v-on:load="createTable()">
     <!-- <h1>Create Pack</h1> -->
 <header>
-    <router-link :to="'/'">Back</router-link>
-    <button @click="onSave()">Save</button>
+    <button @click="onBack()">Back</button>
+    <button @click="onSaveBtn()">Save</button>
 </header>
 <main>
     <div class="tabelQuestionCreate">
@@ -68,7 +68,10 @@
     </footer>
     <div id="makeQuestion">
                     <textarea id="questionInputArea" rows="12" placeholder="write question here"></textarea>
-                    <textarea id="answerInputArea" rows="2" placeholder="write answer here"></textarea>
+                    <textarea id="answerInputArea" rows="1" placeholder="write answer here"></textarea>
+                    <textarea class="wrongAnswerInputArea" rows="1" placeholder="write WRONG answer here"></textarea>
+                    <textarea class="wrongAnswerInputArea" rows="1" placeholder="write WRONG answer here"></textarea>
+                    <textarea class="wrongAnswerInputArea" rows="1" placeholder="write WRONG answer here"></textarea>
         <form method="post" enctype="multipart/form-data">
             <div id="fileUploadBlock">
                 <label for="file">Choose file to upload</label>
@@ -80,14 +83,54 @@
     <div id="bgBlur" @click="onCloseQuestion()">
 
     </div>
+    <div id="bgBlurForSaveWindow" @click="onCloseSaveWindow()">
+
+    </div>
+    <div id="savePackWindow">
+        <label>Enter Pack Name</label>
+        <input type="text" id="nameOfPack">
+        <label>Access</label>
+        <div>
+            <label>Only for me</label>
+            <label class="switch">
+            <input type="checkbox" id="accessPack">
+            <span class="slider round"></span>
+            </label>
+            <label>For All</label>
+        </div>
+        <button @click="onSave()">Save</button>
+    </div>
+    <div id="clarifyQuite">
+        <label>You have unsaved data!</label>
+        <button @click="onSaveBtn()">Save</button>
+        <button @click="back()">Dont Save</button>
+    </div>
+    <div id="bgBlurQuite" @click="onBackCancel()">
+
+    </div>
 </div>
 </template>
 
 
 <script setup>
+import firebase from '../firebase.js'
+import router from '../router/index.js'
+
 let currentInputPick, round = 1
-let pack = {
-    rounds: []
+function back(){
+    router.push('/')
+}
+function onBack(){
+    if (document.getElementById('createPacke').getElementsByClassName('questionMark').length > 0){
+        document.getElementById('clarifyQuite').style.display = 'grid'
+        document.getElementById('bgBlurQuite').style.display = 'block'
+    } else {
+        back()
+    }
+}
+function onBackCancel(){
+    document.getElementById('clarifyQuite').style.display = 'none'
+    document.getElementById('bgBlurQuite').style.display = 'none'
 }
 function createTable(){
     Array.from(document.getElementById('createPacke').getElementsByTagName('main'))[0].insertAdjacentHTML('beforeend', `
@@ -145,15 +188,20 @@ function createTable(){
     Array.from(document.getElementsByClassName('questions')).forEach(element => element.addEventListener('click', onclick))
 }
 function onSave(){
+    if (document.getElementById('nameOfPack').value !== '' && document.getElementById('nameOfPack').value !== null){
     let pack = {
     rounds: []
 }
+pack.name = document.getElementById('nameOfPack').value
+pack.author = 'NONAME'
+pack.access = document.getElementById('accessPack').checked ? 'Global' : 'Local' 
     for (let round = 0; round < Array.from(document.getElementById('createPacke').getElementsByClassName('tabelQuestionCreate')).length; round++){
         pack.rounds.push({
             points: [],
             categories: [],
             questions: [],
-            answers: []
+            answers: [],
+            wrongAnswers: [],
         }) 
         Array.from(document.getElementById('createPacke').getElementsByClassName('tabelQuestionCreate')[round].getElementsByClassName('points')).forEach(element => {
             pack.rounds[round].points.push(Number(element.value))
@@ -166,14 +214,21 @@ function onSave(){
         for (let i = 0; i < pack.rounds[round].points.length * pack.rounds[round].categories.length; i++){
             pack.rounds[round].questions[i] = ''
             pack.rounds[round].answers[i] = ''
+            pack.rounds[round].wrongAnswers[i] = ''
         }
         Array.from(document.getElementById('createPacke').getElementsByClassName('tabelQuestionCreate')[round].getElementsByClassName('questionMark')).forEach(element => {
             let index = Array.from(document.getElementById('createPacke').getElementsByClassName('tabelQuestionCreate')[round].getElementsByTagName('div')).indexOf(element.parentElement)
             pack.rounds[round].questions[index] = element.parentElement.getAttribute('question')
             pack.rounds[round].answers[index] = element.parentElement.getAttribute('answer')
+            pack.rounds[round].wrongAnswers[index] = element.parentElement.getAttribute('wrongAnswers')
         })
     }
     console.log(pack)
+    firebase.data().setData(`packs/${pack.name}`, pack)
+    router.push('/')
+} else {
+    console.log('Enter Pack Name')
+}
 }
 function onclick(event){
     document.getElementById('makeQuestion').style.display = 'grid'
@@ -185,14 +240,24 @@ function onclick(event){
     if (currentInputPick.getAttribute('answer') !== null){
         document.getElementById('answerInputArea').value = currentInputPick.getAttribute('answer')
     }
+    if (currentInputPick.getAttribute('wrongAnswers') !== null){
+        for (let i = 0; i < Array.from(document.getElementsByClassName('wrongAnswerInputArea')).length; i++){
+            let arr = currentInputPick.getAttribute('wrongAnswers').split(',', 3)
+            Array.from(document.getElementsByClassName('wrongAnswerInputArea'))[i].value = arr[i]
+        }
+    }
 }
 function onCloseQuestion(){
     document.getElementById('makeQuestion').style.display = 'none'
     document.getElementById('bgBlur').style.display = 'none'
     currentInputPick.setAttribute('question', document.getElementById('questionInputArea').value)
     currentInputPick.setAttribute('answer', document.getElementById('answerInputArea').value)
+    let arrayWrongAnswers = []
+    Array.from(document.getElementsByClassName('wrongAnswerInputArea')).forEach(element => arrayWrongAnswers.push(element.value))
+    currentInputPick.setAttribute('wrongAnswers', arrayWrongAnswers)
     document.getElementById('questionInputArea').value = ''
     document.getElementById('answerInputArea').value = ''
+    Array.from(document.getElementsByClassName('wrongAnswerInputArea')).forEach(element => element.value = '')
 }
 function onDoneQuestion(){
     document.getElementById('makeQuestion').style.display = 'none'
@@ -207,8 +272,12 @@ function onDoneQuestion(){
     }
     currentInputPick.setAttribute('question', document.getElementById('questionInputArea').value)
     currentInputPick.setAttribute('answer', document.getElementById('answerInputArea').value)
+    let arrayWrongAnswers = []
+    Array.from(document.getElementsByClassName('wrongAnswerInputArea')).forEach(element => arrayWrongAnswers.push(element.value))
+    currentInputPick.setAttribute('wrongAnswers', arrayWrongAnswers)
     document.getElementById('questionInputArea').value = ''
     document.getElementById('answerInputArea').value = ''
+    Array.from(document.getElementsByClassName('wrongAnswerInputArea')).forEach(element => element.value = '')
 }
 function prevRound(){
     round--
@@ -230,5 +299,16 @@ function nextRound(){
         document.getElementById('createPacke').getElementsByTagName('main')[0].getElementsByClassName('tabelQuestionCreate')[round-2].style.display = 'none'
         document.getElementById('createPacke').getElementsByTagName('main')[0].getElementsByClassName('tabelQuestionCreate')[round-1].style.display = 'grid'
     }
+}
+function onSaveBtn(){
+    onBackCancel()
+    document.getElementById('savePackWindow').style.display = 'grid'
+    document.getElementById('bgBlurForSaveWindow').style.display = 'block'
+}
+function onCloseSaveWindow(){
+    document.getElementById('savePackWindow').style.display = 'none'
+    document.getElementById('bgBlurForSaveWindow').style.display = 'none'
+    document.getElementById('nameOfPack').value = ''
+    document.getElementById('accessPack').value = false
 }
 </script>
