@@ -267,7 +267,7 @@ input:checked + .slider:before {
   margin: 0 2%;
 }
 .packCategories{
-  display: flex;
+  /* display: none; */
   flex-wrap: wrap;
 }
 .roundOfCategories{

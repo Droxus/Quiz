@@ -93,7 +93,6 @@
         <div>
             <label>Only for me</label>
             <label class="switch">
-            <input type="checkbox" id="accessPack">
             <span class="slider round"></span>
             </label>
             <label>For All</label>
@@ -193,8 +192,7 @@ function onSave(){
     rounds: []
 }
 pack.name = document.getElementById('nameOfPack').value
-pack.author = 'NONAME'
-pack.access = document.getElementById('accessPack').checked ? 'Global' : 'Local' 
+pack.author = firebase.data().userName
     for (let round = 0; round < Array.from(document.getElementById('createPacke').getElementsByClassName('tabelQuestionCreate')).length; round++){
         pack.rounds.push({
             points: [],
@@ -309,6 +307,5 @@ function onCloseSaveWindow(){
     document.getElementById('savePackWindow').style.display = 'none'
     document.getElementById('bgBlurForSaveWindow').style.display = 'none'
     document.getElementById('nameOfPack').value = ''
-    document.getElementById('accessPack').value = false
 }
 </script>

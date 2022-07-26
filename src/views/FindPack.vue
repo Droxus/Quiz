@@ -8,8 +8,12 @@
     </header>
     <main>
         <div id="packsBlock">
-          
-            <!-- <packForFind v-for="kek of firebase.data().kekw"/> -->
+            <Packs 
+            v-for="pack in packs"
+            :author="pack.author"
+            :name="pack.name"
+            :rounds="pack.rounds"
+            />
         </div>
     </main> 
 
@@ -36,16 +40,6 @@ body{
     grid-template-columns: 100%;
     grid-auto-rows: 12vh;
 }
-.pack{
-    border: 1px solid black;
-    width: 100vw;
-    height: 100%;
-    display: grid;
-    grid-template-columns: 15% 60% 25%;
-    grid-template-rows: 30% 70%;
-    grid-template-areas: "packStar packName packAuthor"
-    "packStar packCategories packCategories";
-}
 #packQuestionForm{
     display: none;
     position: absolute;
@@ -55,16 +49,25 @@ body{
     height: 100%;
 }
 </style>
-<script setup>
+<script>
 import firebase from '../firebase.js'
-firebase.data().showPacks()
-
-
-function closePackForm(){
-    document.getElementById('packQuestionForm').style.display = 'none'
-    while (document.getElementById('packQuestionForm').getElementsByTagName('main')[0].firstElementChild){
-        document.getElementById('packQuestionForm').getElementsByTagName('main')[0].firstElementChild.remove()
+import Packs from './Packs.vue'
+export default {
+    components: {
+        Packs
+    },
+    data() {
+        return {
+            packs: firebase.data().packs,
+            closePackForm: function(){
+                document.getElementById('packQuestionForm').style.display = 'none'
+                while (document.getElementById('packQuestionForm').getElementsByTagName('main')[0].firstElementChild){
+                    document.getElementById('packQuestionForm').getElementsByTagName('main')[0].firstElementChild.remove()
+                }
+                document.getElementById('findPack').style.display = 'block'
+            }
+        }
     }
-    document.getElementById('findPack').style.display = 'block'
 }
+
 </script>

@@ -1,7 +1,7 @@
 
 
 <template>
-
+<Loader />
   <RouterView/>
 </template>
 
@@ -9,6 +9,11 @@
 
 </style>
 <script>
+import Loader from './views/Loader.vue'
+import firebase from './firebase.js'
+firebase.data().authFirebase()
+firebase.data().getPacksData()
+console.log(firebase.data().userName)
 
 
 </script>
