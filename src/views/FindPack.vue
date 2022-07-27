@@ -65,7 +65,7 @@ export default {
                     document.getElementById('packQuestionForm').getElementsByTagName('main')[0].firstElementChild.remove()
                 }
                 document.getElementById('findPack').style.display = 'block'
-            }
+            },
         }
     }
 }

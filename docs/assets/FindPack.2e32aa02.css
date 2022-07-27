@@ -1,0 +1,1 @@
+body{overflow-x:hidden}#packsBlock{width:100vw;height:100%;display:grid;grid-template-columns:100%;grid-auto-rows:12vh}#packQuestionForm{display:none;position:absolute;top:0;left:0;width:100vw;height:100%}

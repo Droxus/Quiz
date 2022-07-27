@@ -1,0 +1,1 @@
+.displayNone{display:none}.pack{border:1px solid black;width:100vw;height:12vh;display:grid;grid-template-columns:15% 60% 25%;grid-template-rows:30% 70%;grid-template-areas:"packStar packName packAuthor" "packStar packCategories packCategories"}

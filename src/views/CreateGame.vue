@@ -5,73 +5,15 @@
     <h1>Create Game</h1>
     <router-link :to="'/'">Back</router-link>
     <div id="pickPackBlock">
-        <div class="packAtPickBlock" @click="onPickPack()">
-            <img class="packStar" src="/img/star.png" alt="star">
-                <label class="packName">Pack Name</label>
-                <label class="packAuthor">Author</label>
-                <div class="packCategoriesBlock">
-                    <button @click="prevRound($event)">&lt</button>
-                    <div class="categoriesRoundBlock">
-                        <label class="roundOfCategories">Round 1</label>
-                        <div class="packCategories">
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                        </div>
-                            <div class="packCategories" style="display: none;">
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                        </div>
-                    </div>
-                    <button @click="nextRound($event)">></button>
-                </div>
-        </div>
+            <Packs 
+            v-for="pack in packs"
+            :author="pack.author"
+            :name="pack.name"
+            :rounds="pack.rounds"
+            />
     </div>
     <div id="lobbyGame">
         <button @click="closePickPack()">Back</button>
-        <div class="packAtPickBlock">
-            <img class="packStar" src="/img/star.png" alt="star">
-                <label class="packName">Pack Name</label>
-                <label class="packAuthor">Author</label>
-                <div class="packCategoriesBlock">
-                    <button @click="prevRound($event)">&lt</button>
-                    <div class="categoriesRoundBlock">
-                        <label class="roundOfCategories">Round 1</label>
-                        <div class="packCategories">
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                                <label class="packCategoriesLbl">Anime</label>
-                        </div>
-                            <div class="packCategories" style="display: none;">
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                                <label class="packCategoriesLbl">Kekw</label>
-                        </div>
-                    </div>
-                    <button @click="nextRound($event)">></button>
-                </div>
-        </div>
         <div>
     <!-- <label>text / voice; code / opened; gameName; </label> -->
     <div>
@@ -98,7 +40,7 @@
         <div id="lobby">
 
         </div>
-        <button id="startGame">Start Game</button>
+        <button id="startGame" @click="onStartGame()">Start Game</button>
     </div>
 </div>
 </template>
@@ -144,32 +86,28 @@
 }
 </style>
 
-<script setup>
-    
-    function nextRound(event){
-        event.stopImmediatePropagation()
-    let index = Array.from(event.target.parentElement.getElementsByClassName('categoriesRoundBlock')[0].getElementsByClassName('packCategories')).findIndex(element => element.style.display !== 'none')
-    if ((index+1) < Array.from(event.target.parentElement.getElementsByClassName('categoriesRoundBlock')[0].getElementsByClassName('packCategories')).length){
-        event.target.parentElement.getElementsByClassName('categoriesRoundBlock')[0].getElementsByClassName('packCategories')[index].style.display = 'none'
-        event.target.parentElement.getElementsByClassName('categoriesRoundBlock')[0].getElementsByClassName('packCategories')[index+1].style.display = 'flex'
-        event.target.parentElement.getElementsByClassName('categoriesRoundBlock')[0].getElementsByClassName('roundOfCategories')[0].innerText = `Round ${index+2}`
+<script>
+import firebase from '../firebase.js'
+import Packs from './Packs.vue'
+export default {
+    components: {
+        Packs
+    },
+    data() {
+        return {
+            packs: firebase.data().packs,
+            closePickPack: function(){
+                document.getElementById('lobbyGame').style.display = 'none'
+                document.getElementById('pickPackBlock').style.display = 'block'
+                if (document.getElementById('lobbyGame').getElementsByClassName('pack')[0] !== undefined) {
+                    document.getElementById('lobbyGame').getElementsByClassName('pack')[0].remove()
+                } 
+            },
+            pickedPack: Packs.data().pickedPack,
+            onStartGame: function(){
+                
+            }
+        }
     }
-}
-function prevRound(event){
-    event.stopImmediatePropagation()
-    let index = Array.from(event.target.parentElement.getElementsByClassName('categoriesRoundBlock')[0].getElementsByClassName('packCategories')).findIndex(element => element.style.display !== 'none')
-    if (index > 0){
-        event.target.parentElement.getElementsByClassName('categoriesRoundBlock')[0].getElementsByClassName('packCategories')[index].style.display = 'none'
-        event.target.parentElement.getElementsByClassName('categoriesRoundBlock')[0].getElementsByClassName('packCategories')[index-1].style.display = 'flex'
-        event.target.parentElement.getElementsByClassName('categoriesRoundBlock')[0].getElementsByClassName('roundOfCategories')[0].innerText = `Round ${index}`
-    }
-}
-function onPickPack(){
-    document.getElementById('lobbyGame').style.display = 'block'
-    document.getElementById('pickPackBlock').style.display = 'none'
-}
-function closePickPack(){
-        document.getElementById('lobbyGame').style.display = 'none'
-    document.getElementById('pickPackBlock').style.display = 'block'
 }
 </script>

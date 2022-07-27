@@ -1,6 +1,7 @@
 <script>
 import PackRounds from './PackRounds.vue'
 import firebase from '../firebase.js'
+let pickedPack
 export default {
         components: {
         PackRounds
@@ -27,30 +28,42 @@ export default {
             }
 },
             onPack: function(event){
-                document.getElementById('packQuestionForm').style.display = 'block'
-                document.getElementById('findPack').style.display = 'none'
-                console.log(event.currentTarget)
-                document.getElementById('packNameAtQuestionForm').textContent = `${event.currentTarget.getElementsByClassName('packName')[0].textContent}`
-                console.log(firebase.data().packs)
-                for (let i = 0; i < firebase.data().packs[event.currentTarget.getElementsByClassName('packName')[0].textContent].rounds.length; i++){
-                Array.from(document.getElementById('packQuestionForm').getElementsByTagName('main'))[0].insertAdjacentHTML('beforeend', `
-                    <h1>Round ${i+1}</h1>
-                `)
-                if (firebase.data().packs[event.currentTarget.getElementsByClassName('packName')[0].textContent].rounds[i].categories == undefined){
-                    firebase.data().packs[event.currentTarget.getElementsByClassName('packName')[0].textContent].rounds[i].categories = ["", "", "", "", "", "", ""]
+                switch (event.currentTarget.parentElement.id) {
+                    case 'packsBlock':
+                                    document.getElementById('packQuestionForm').style.display = 'block'
+                                    document.getElementById('findPack').style.display = 'none'
+                                    console.log(event.currentTarget)
+                                    document.getElementById('packNameAtQuestionForm').textContent = `${event.currentTarget.getElementsByClassName('packName')[0].textContent}`
+                                    console.log(firebase.data().packs)
+                                    for (let i = 0; i < firebase.data().packs[event.currentTarget.getElementsByClassName('packName')[0].textContent].rounds.length; i++){
+                                    Array.from(document.getElementById('packQuestionForm').getElementsByTagName('main'))[0].insertAdjacentHTML('beforeend', `
+                                        <h1>Round ${i+1}</h1>
+                                    `)
+                                    if (firebase.data().packs[event.currentTarget.getElementsByClassName('packName')[0].textContent].rounds[i].categories == undefined){
+                                        firebase.data().packs[event.currentTarget.getElementsByClassName('packName')[0].textContent].rounds[i].categories = ["", "", "", "", "", "", ""]
+                                    }
+                                    for (let j = 0; j < firebase.data().packs[event.currentTarget.getElementsByClassName('packName')[0].textContent].rounds[i].categories.length; j++) {
+                                        document.getElementById('packQuestionForm').getElementsByTagName('main')[0].insertAdjacentHTML('beforeend', `
+                                        <h2>${firebase.data().packs[event.currentTarget.getElementsByClassName('packName')[0].textContent].rounds[i].categories[j]}</h2>
+                                    `)
+                                    for (let k = (5 * j); k < (j+1) * (firebase.data().packs[event.currentTarget.getElementsByClassName('packName')[0].textContent].rounds[i].questions.length / 7) - 1; k++) {
+                                        document.getElementById('packQuestionForm').getElementsByTagName('main')[0].insertAdjacentHTML('beforeend', `
+                                        <h3>${firebase.data().packs[event.currentTarget.getElementsByClassName('packName')[0].textContent].rounds[i].questions[k]}</h3>
+                                    `)
+                                    }
+                                    }
+                                    }
+                        break;
+                    case 'pickPackBlock':
+                                document.getElementById('lobbyGame').style.display = 'block'
+                                document.getElementById('pickPackBlock').style.display = 'none'
+                                document.getElementById('lobbyGame').insertAdjacentElement('afterbegin', event.currentTarget)
+                                pickedPack = firebase.data().packs[event.currentTarget.getElementsByClassName('packName')[0].innerText]
+                            break;      
                 }
-                for (let j = 0; j < firebase.data().packs[event.currentTarget.getElementsByClassName('packName')[0].textContent].rounds[i].categories.length; j++) {
-                    document.getElementById('packQuestionForm').getElementsByTagName('main')[0].insertAdjacentHTML('beforeend', `
-                    <h2>${firebase.data().packs[event.currentTarget.getElementsByClassName('packName')[0].textContent].rounds[i].categories[j]}</h2>
-                `)
-                for (let k = (5 * j); k < (j+1) * (firebase.data().packs[event.currentTarget.getElementsByClassName('packName')[0].textContent].rounds[i].questions.length / 7) - 1; k++) {
-                    document.getElementById('packQuestionForm').getElementsByTagName('main')[0].insertAdjacentHTML('beforeend', `
-                    <h3>${firebase.data().packs[event.currentTarget.getElementsByClassName('packName')[0].textContent].rounds[i].questions[k]}</h3>
-                `)
-                }
-                }
-                }
-  }
+
+  },
+  pickedPack: pickedPack,
         }
     }
 }
@@ -62,7 +75,7 @@ export default {
                 <label class="packName">{{name}}</label>
                 <label class="packAuthor">{{author}}</label>
                 <div class="packCategoriesBlock">
-                    <button @click="prevRound($event)">&lt</button>
+                    <button @click="prevRound($event)" class="prevRound">&lt</button>
                     <div class="categoriesRoundBlock">
                         <label class="roundOfCategories">Round 1</label>
                         <PackRounds
@@ -71,7 +84,7 @@ export default {
                          :firstElement="rounds[0] == round"
                         />
                     </div>
-                    <button @click="nextRound($event)">></button>
+                    <button @click="nextRound($event)" class="nextRound">></button>
                 </div>
         </div>
 </template>
@@ -80,7 +93,7 @@ export default {
 .pack{
     border: 1px solid black;
     width: 100vw;
-    height: 100%;
+    height: 12vh;
     display: grid;
     grid-template-columns: 15% 60% 25%;
     grid-template-rows: 30% 70%;
