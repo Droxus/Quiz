@@ -8,11 +8,13 @@
     </header>
     <main>
         <div id="allGames">
-            <div class="gamesOnPick">
-                <label>Game Name</label>
-                <label>Creator</label>
-                <label>1</label>
-            </div>
+            <GameRooms
+            v-for="gameRoom in gameRooms"
+            :gameName="gameRoom.name"
+            :host="gameRoom.host.name"
+            :players="gameRoom.players.length"
+            :gameId="gameRoom.ID"
+            />
         </div>
     </main>
 </div>
@@ -34,3 +36,18 @@
     border: 1px solid black;
 }
 </style>
+
+<script>
+import GameRooms from './GameRooms.vue'
+import firebase from '../firebase'
+export default {
+    components: {
+        GameRooms
+    },
+    data() {
+        return {
+            gameRooms: firebase.data().gameRooms
+        }
+    }
+}
+</script>

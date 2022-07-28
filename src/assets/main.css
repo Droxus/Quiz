@@ -269,6 +269,7 @@ input:checked + .slider:before {
 .packCategories{
   /* display: none; */
   flex-wrap: wrap;
+  word-break: break-word;
 }
 .roundOfCategories{
   text-align: center;

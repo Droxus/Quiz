@@ -1,5 +1,7 @@
 import { initializeApp } from 'firebase/app';
-import { getDatabase, ref, set, child, get  } from "firebase/database";
+import { getDatabase, ref, push, set, child, get, update, onDisconnect, onValue, serverTimestamp } from "firebase/database";
+import router from './router/index.js'
+import Game from './views/Game.vue'
 const firebaseConfig = {
     apiKey: "API_KEY",
   authDomain: "PROJECT_ID.firebaseapp.com",
@@ -16,10 +18,24 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const dbRef = ref(getDatabase());
+const db = getDatabase();
 
 let uid
 let allUid = []
 let userName
+let gameID, allRooms = []
+let gameRooms
+let players
+let pickedGame
+
+
+// const presenceRef = ref(db, "disconnectmessage");
+// Write a string when this client loses connection
+// onDisconnect(presenceRef).set("I disconnected!");
+
+
+
+
 //  === === === AUTH === === ===
 
 
@@ -28,6 +44,9 @@ let userName
 let packs
 
     export default {
+      components: {
+        Game
+      },
         data(){
           return {
             setData: function(path, obj){
@@ -46,58 +65,6 @@ let packs
                 }
               })
             },
-            // showPacks: async function(){
-            //   get(child(dbRef, 'packs/')).then((snapshot) => {
-            //     if (snapshot.exists()) {
-            //       packs = snapshot.val();
-            //       console.log(packs)
-            //       return snapshot.val();
-            //     } else {
-            //       console.log("No data available");
-            //     }
-            //   }).then(() => {
-            //     for (const pack in packs){
-            //       document.getElementById('packsBlock').insertAdjacentHTML('beforeend', `
-            //       <div class="pack">
-            //       <img class="packStar" src="/img/star.png" alt="star">
-            //       <label class="packName">${pack}</label>
-            //       <label class="packAuthor">${packs[pack].author}</label>
-            //       <div class="packCategoriesBlock">
-            //           <button class="prevRound" @click="prevRound($event)">&lt</button>
-            //           <div class="categoriesRoundBlock">
-            //               <label class="roundOfCategories">Round 1</label>
-            //           </div>
-            //           <button class="nextRound" @click="nextRound($event)">></button>
-            //       </div>
-            //   </div>
-            //       `)
-            //       for (let i = 0; i < packs[pack].rounds.length; i++){
-            //         document.getElementsByClassName('categoriesRoundBlock')[document.getElementsByClassName('categoriesRoundBlock').length-1].insertAdjacentHTML('beforeend', `
-            //         <div class="packCategories"></div>
-            //         `)
-            //         if (packs[pack].rounds[i].categories !== undefined){
-            //           for (let j = 0; j < packs[pack].rounds[i].categories.length; j++){
-            //             document.getElementsByClassName('packCategories')[document.getElementsByClassName('packCategories').length-1].insertAdjacentHTML('beforeend', `
-            //             <label class="packCategoriesLbl">${packs[pack].rounds[i].categories[j]}</label>
-            //            `)
-            //           }
-            //         } else {
-            //           document.getElementsByClassName('packCategories')[document.getElementsByClassName('packCategories').length-1].insertAdjacentHTML('beforeend', `
-            //             <label class="noCategoriesLbl">No Categories</label>
-            //            `)
-            //         }
-            //       }
-
-            //     }
-            //     // document.getElementById('packsBlock').addEventListener('click', onPack)
-            //     Array.from(document.getElementsByClassName('pack')).forEach(element => element.addEventListener('click', onPack))
-            //     Array.from(document.getElementsByClassName('prevRound')).forEach(element => element.addEventListener('click', prevRound))
-            //     Array.from(document.getElementsByClassName('nextRound')).forEach(element => element.addEventListener('click', nextRound))
-            //   }).catch((error) => {
-            //     console.error(error);
-            //   });
-
-            // },
             authFirebase: async function(){ 
               // localStorage.removeItem('uid')
               if (localStorage.getItem('uid') === null){
@@ -129,6 +96,109 @@ let packs
                 name: userName
                }).then(() => {localStorage.setItem('userName', userName)})
             },
+            createGame: function(name, answerType, toJoin, pickedPack){
+              get(child(dbRef, `rooms/`)).then((snapshot) => {
+                if (snapshot.exists()) {
+                  allRooms = Object.keys(snapshot.val())
+                } else {
+                  return gameID = Math.floor(Math.random() * Math.pow(10, 12))
+                }
+              }).catch((error) => {
+                console.error(error);
+              });
+              do {
+                gameID = Math.floor(Math.random() * Math.pow(10, 12))
+              } while (allRooms.findIndex(id => id == gameID) !== -1)
+              pickedGame = {
+                name: name,
+                host: {
+                  id: uid,
+                  name: userName
+                },
+                answerType: answerType,
+                toJoin: toJoin,
+                pickedPack: pickedPack,
+                ID: gameID,
+                players: [
+                  {id: uid, name: userName, inGame: true}
+                ]
+              }
+              set(ref(database, `rooms/${gameID}`), pickedGame).then(() => {
+                onValue(ref(db, `rooms/${gameID}`), (snapshot) => {
+                  pickedGame = snapshot.val();
+                  Game.data().showPlayers()
+                  console.log(pickedGame)
+                });
+              }).then(() => {
+                players = []; 
+                players.push({id: uid, name: userName, inGame: true});
+                router.push('/game')})
+            },
+            getGameRooms: function(){
+              get(child(dbRef, `rooms/`)).then((snapshot) => {
+                if (snapshot.exists()) {
+                   gameRooms = snapshot.val()
+                   console.log(gameRooms)
+                }
+              }).catch((error) => {
+                console.error(error);
+              });
+            },
+            joinGameRoom: function(roomID){
+              get(child(dbRef, `rooms/${roomID}/`)).then((snapshot) => {
+                if (snapshot.exists()) {
+                  pickedGame = snapshot.val()
+                  console.log(pickedGame)
+                  players = []
+                  players = snapshot.val().players
+                   console.log(players)
+                }
+              }).catch((error) => {
+                console.error(error);
+              }).then(() => {
+                let index = players.findIndex(element => element.id == uid)
+                if (index == -1){
+                  players.push({
+                    id: uid, 
+                    name: userName, 
+                    inGame: true
+                  })
+                  console.log(players)
+                  set(ref(database, `rooms/${roomID}/players`),
+                    players
+                  ).then(() => {
+                    onValue(ref(db, `rooms/${roomID}`), (snapshot) => {
+                      pickedGame = snapshot.val();
+                      Game.data().showPlayers()
+                      console.log(pickedGame)
+                  });
+                }).then(() => {router.push('/game')})
+                } else {
+                  onValue(ref(db, `rooms/${roomID}`), (snapshot) => {
+                    pickedGame = snapshot.val();
+                    Game.data().showPlayers()
+                    console.log(pickedGame)
+                  })
+                    players[index].inGame = true
+                    router.push('/game')
+                }
+              }).then(() => {
+                let index = players.findIndex(element => element.id == uid)
+                const myConnectionsRef = ref(db, `rooms/${roomID}/players/${index}/inGame`);
+                const lastOnlineRef = ref(db, `users/${uid}/lastOnline`);
+                const connectedRef = ref(db, '.info/connected');
+                onValue(connectedRef, (snap) => {
+                  if (snap.val() === true) {
+                    // const con = push(myConnectionsRef);
+                    onDisconnect(myConnectionsRef).remove();
+                    set(myConnectionsRef, true);
+                    onDisconnect(lastOnlineRef).set(serverTimestamp());
+                  }
+                });
+              })
+            },
+            pickedGame: pickedGame,
+            gameRooms: gameRooms,
             uid: uid,
             userName: userName,
             packs: packs

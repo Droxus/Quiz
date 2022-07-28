@@ -19,7 +19,7 @@
     <div>
         <label>Text</label>
         <label class="switch">
-        <input type="checkbox">
+        <input type="checkbox" id="answerType">
         <span class="slider round"></span>
         </label>
         <label>Voice</label>
@@ -27,7 +27,7 @@
         <div>
         <label>Invited</label>
         <label class="switch">
-        <input type="checkbox">
+        <input type="checkbox" id="toJoin">
         <span class="slider round"></span>
         </label>
         <label>Opened</label>
@@ -105,7 +105,14 @@ export default {
             },
             pickedPack: Packs.data().pickedPack,
             onStartGame: function(){
-                
+                let gameName = document.getElementById('inputNameGame').value
+                let answerType = document.getElementById('answerType').checked ? 'Voice' : 'Text'
+                let toJoin = document.getElementById('toJoin').checked ? 'Opened' : 'Invited' 
+                let pickedPack = firebase.data().packs[document.getElementById('lobbyGame').getElementsByClassName('packName')[0].innerText]
+                if (gameName == undefined && gameName == '' && gameName == null){
+                    gameName = 'New Game'
+                }
+                firebase.data().createGame(gameName, answerType, toJoin, pickedPack)
             }
         }
     }

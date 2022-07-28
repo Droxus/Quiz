@@ -1,9 +1,10 @@
 <template>
 <div class="packCategories" v-bind:class="{displayNone: !firstElement}">
-    <PackCategories 
+    <PackCategories v-if="categories"
     v-for="category in categories"
     :category="category"
     />
+    <label class="packCategoriesLbl" v-else="categories">No Categories</label>
 </div>
 </template>
 

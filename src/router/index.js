@@ -28,6 +28,11 @@ const router = createRouter({
       path: '/createPack',
       name: 'createPack',
       component: () => import('../views/CreatePack.vue')
+    },
+    {
+      path: '/game',
+      name: 'game',
+      component: () => import('../views/Game.vue')
     }
   ]
 })
