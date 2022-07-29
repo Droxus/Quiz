@@ -97,9 +97,22 @@ let packs
                }).then(() => {localStorage.setItem('userName', userName)})
             },
             createGame: function(name, answerType, toJoin, pickedPack){
+              if (localStorage.getItem('currentGame') !== undefined){
+                if (this.gameRooms[localStorage.getItem('currentGame')] !== undefined){
+                  if (this.gameRooms[localStorage.getItem('currentGame')].players !== undefined){
+                    for (let i = 0; i < Object.entries(this.gameRooms[localStorage.getItem('currentGame')].players).length; i++){
+                      if (Object.entries(this.gameRooms[localStorage.getItem('currentGame')].players)[i][1].id == uid){
+                        Object.entries(this.gameRooms[localStorage.getItem('currentGame')].players)[i][1].inGame = false
+                        set(ref(db, `rooms/${localStorage.getItem('currentGame')}/players/${i}`), {});
+                      }
+                    }
+                  }
+                }
+              }
               get(child(dbRef, `rooms/`)).then((snapshot) => {
                 if (snapshot.exists()) {
                   allRooms = Object.keys(snapshot.val())
+                  allRooms.shift()
                 } else {
                   return gameID = Math.floor(Math.random() * Math.pow(10, 12))
                 }
@@ -123,13 +136,19 @@ let packs
                   {id: uid, name: userName, inGame: true}
                 ]
               }
+              Game.data().pickedGame = pickedGame
               set(ref(database, `rooms/${gameID}`), pickedGame).then(() => {
                 onValue(ref(db, `rooms/${gameID}`), (snapshot) => {
-                  pickedGame = snapshot.val();
-                  Game.data().showPlayers()
-                  console.log(pickedGame)
-                });
+                    console.log(snapshot.val())
+                    if (snapshot.val() !== null){
+                      pickedGame = snapshot.val();
+                      console.log(pickedGame)
+                    }
+                    Game.data().showPlayers()
+                    Game.data().showHeader()
+                  });
               }).then(() => {
+                localStorage.setItem('currentGame', gameID);
                 players = []; 
                 players.push({id: uid, name: userName, inGame: true});
                 router.push('/game')})
@@ -138,13 +157,43 @@ let packs
               get(child(dbRef, `rooms/`)).then((snapshot) => {
                 if (snapshot.exists()) {
                    gameRooms = snapshot.val()
+                   delete gameRooms.test
                    console.log(gameRooms)
+                }
+                console.log(gameRooms)
+                if (gameRooms !== undefined){
+                  for (let i = 0; i < Object.entries(gameRooms).length; i++) {
+                    let activePlayers = []
+                    if (Object.entries(gameRooms)[i][1].players !== undefined){
+                      for (let j = 0; j < Object.entries(gameRooms)[i][1].players.length; j++){
+                        if (Object.entries(gameRooms)[i][1].players[j].inGame == true){
+                          activePlayers.push(Object.entries(gameRooms)[i][1].players[j])
+                        }
+                      }
+                    }
+                    if (activePlayers.length < 1){
+                      console.log('DELETE')
+                      set(ref(db, `rooms/${Object.entries(gameRooms)[i][0]}`), {});
+                    }
+                  }
                 }
               }).catch((error) => {
                 console.error(error);
               });
             },
             joinGameRoom: function(roomID){
+              if (localStorage.getItem('currentGame') !== undefined && localStorage.getItem('currentGame') !== roomID){
+                if (this.gameRooms[localStorage.getItem('currentGame')] !== undefined){
+                  if (this.gameRooms[localStorage.getItem('currentGame')].players !== undefined){
+                    for (let i = 0; i < Object.entries(this.gameRooms[localStorage.getItem('currentGame')].players).length; i++){
+                      if (Object.entries(this.gameRooms[localStorage.getItem('currentGame')].players)[i][1].id == uid){
+                        Object.entries(this.gameRooms[localStorage.getItem('currentGame')].players)[i][1].inGame = false
+                        set(ref(db, `rooms/${localStorage.getItem('currentGame')}/players/${i}`), {});
+                      }
+                    }
+                  }
+                }
+              }
               get(child(dbRef, `rooms/${roomID}/`)).then((snapshot) => {
                 if (snapshot.exists()) {
                   pickedGame = snapshot.val()
@@ -156,6 +205,7 @@ let packs
               }).catch((error) => {
                 console.error(error);
               }).then(() => {
+                console.log(players)
                 let index = players.findIndex(element => element.id == uid)
                 if (index == -1){
                   players.push({
@@ -168,21 +218,30 @@ let packs
                     players
                   ).then(() => {
                     onValue(ref(db, `rooms/${roomID}`), (snapshot) => {
-                      pickedGame = snapshot.val();
+                      console.log(snapshot.val())
+                      if (snapshot.val() !== null){
+                        pickedGame = snapshot.val();
+                        console.log(pickedGame)
+                      }
                       Game.data().showPlayers()
-                      console.log(pickedGame)
+                      Game.data().showHeader()
                   });
                 }).then(() => {router.push('/game')})
                 } else {
                   onValue(ref(db, `rooms/${roomID}`), (snapshot) => {
-                    pickedGame = snapshot.val();
+                    console.log(snapshot.val())
+                    if (snapshot.val() !== null){
+                      pickedGame = snapshot.val();
+                      console.log(pickedGame)
+                    }
                     Game.data().showPlayers()
-                    console.log(pickedGame)
+                    Game.data().showHeader()
                   })
                     players[index].inGame = true
                     router.push('/game')
                 }
               }).then(() => {
+                localStorage.setItem('currentGame', roomID);
                 let index = players.findIndex(element => element.id == uid)
                 const myConnectionsRef = ref(db, `rooms/${roomID}/players/${index}/inGame`);
                 const lastOnlineRef = ref(db, `users/${uid}/lastOnline`);
@@ -196,6 +255,17 @@ let packs
                   }
                 });
               })
+            },
+            leaveGame: function(){
+              console.log(Object.entries(pickedGame.players).length)
+              for (let i = 0; i < Object.entries(pickedGame.players).length; i++){
+                if (Object.entries(pickedGame.players)[i][1].id == uid){
+                  set(ref(db, `rooms/${localStorage.getItem('currentGame')}/players/${i}/inGame`), false).then(() => {
+                    localStorage.setItem('currentGame', undefined)
+                    router.push('/joinGame')
+                  })
+                }
+              }
             },
             pickedGame: pickedGame,
             gameRooms: gameRooms,

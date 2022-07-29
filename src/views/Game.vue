@@ -58,12 +58,7 @@
         <div @click="onclick($event)"></div>
 </div>
 <div id="playersBlock">
-        
-        <!-- <PlayersInGame 
-        v-for="player in players"
-        :nickName="player.name"
-        /> -->
-
+    
 </div>
 </div>
 </div>
@@ -71,20 +66,21 @@
 
 <script>
 import firebase from  '../firebase.js'
-import PlayersInGame from './PlayersInGame.vue'
 
+function onLeaveBtn(){
+    console.log('aa')
+    firebase.data().leaveGame()
+}
 export default {
-    components: {
-        PlayersInGame
-    },
     data() {
         return {
             pickedGame: firebase.data().pickedGame,
-            players: firebase.data().pickedGame.players,
+            players: firebase.data().pickedGame ? firebase.data().pickedGame.players : null,
             showPlayers: function(){
                 while (document.getElementById('playersBlock').firstElementChild) {
                     document.getElementById('playersBlock').firstElementChild.remove()
                 }
+                console.log(this.pickedGame)
                 let activePlayers = this.players.filter(element => element.inGame == true)
                 console.log(activePlayers)
                 for (let i = 0; i < activePlayers.length; i++){
@@ -95,7 +91,16 @@ export default {
                         <label class="playersPoints">${activePlayers[i].points ? activePlayers[i].points : 0}</label>
                     </div>`)
                 }
-            }
+            },
+            showHeader: function(){
+                while (document.getElementById('headerOfGame').firstElementChild) {
+                document.getElementById('headerOfGame').firstElementChild.remove()
+                }
+                document.getElementById('headerOfGame').insertAdjacentHTML('beforeend', `
+                <button id="leaveBtn">Leave</button>
+                `)
+                document.getElementById('leaveBtn').addEventListener('click', onLeaveBtn)
+            },
         }
     }
 }
