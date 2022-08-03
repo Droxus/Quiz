@@ -12,7 +12,7 @@
             v-for="gameRoom in gameRooms"
             :gameName="gameRoom.name"
             :host="gameRoom.host.name"
-            :players="gameRoom.players.length"
+            :players="gameRoom.players ? gameRoom.players.length : 0"
             :gameId="gameRoom.ID"
             />
         </div>

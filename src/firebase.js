@@ -27,7 +27,7 @@ let gameID, allRooms = []
 let gameRooms
 let players
 let pickedGame
-
+let turnPlayerIndex
 
 // const presenceRef = ref(db, "disconnectmessage");
 // Write a string when this client loses connection
@@ -96,7 +96,7 @@ let packs
                 name: userName
                }).then(() => {localStorage.setItem('userName', userName)})
             },
-            createGame: function(name, answerType, toJoin, pickedPack){
+            createGame: function(name, answerType, toJoin, pickedPack, isHost, onWrongAnswer, answerModeChoose){
               if (localStorage.getItem('currentGame') !== undefined){
                 if (this.gameRooms[localStorage.getItem('currentGame')] !== undefined){
                   if (this.gameRooms[localStorage.getItem('currentGame')].players !== undefined){
@@ -130,28 +130,30 @@ let packs
                 },
                 answerType: answerType,
                 toJoin: toJoin,
+                isHost: isHost,
+                onWrongAnswer: onWrongAnswer,
+                answerModeChoose: answerModeChoose,
                 pickedPack: pickedPack,
                 ID: gameID,
+                started: false,
+                gameLine: {
+                  turn: false,
+                  pikedQuestion: false,
+                  voiting: false
+                },
                 players: [
                   {id: uid, name: userName, inGame: true}
                 ]
               }
               Game.data().pickedGame = pickedGame
               set(ref(database, `rooms/${gameID}`), pickedGame).then(() => {
-                onValue(ref(db, `rooms/${gameID}`), (snapshot) => {
-                    console.log(snapshot.val())
-                    if (snapshot.val() !== null){
-                      pickedGame = snapshot.val();
-                      console.log(pickedGame)
-                    }
-                    Game.data().showPlayers()
-                    Game.data().showHeader()
-                  });
-              }).then(() => {
                 localStorage.setItem('currentGame', gameID);
                 players = []; 
                 players.push({id: uid, name: userName, inGame: true});
-                router.push('/game')})
+                router.push('/game').then(() => {
+                  Game.data().startGame()
+                })
+                })
             },
             getGameRooms: function(){
               get(child(dbRef, `rooms/`)).then((snapshot) => {
@@ -166,8 +168,10 @@ let packs
                     let activePlayers = []
                     if (Object.entries(gameRooms)[i][1].players !== undefined){
                       for (let j = 0; j < Object.entries(gameRooms)[i][1].players.length; j++){
-                        if (Object.entries(gameRooms)[i][1].players[j].inGame == true){
-                          activePlayers.push(Object.entries(gameRooms)[i][1].players[j])
+                        if (Object.entries(gameRooms)[i][1].players[j] !== null && Object.entries(gameRooms)[i][1].players[j] !== undefined){
+                          if (Object.entries(gameRooms)[i][1].players[j].inGame == true){
+                            activePlayers.push(Object.entries(gameRooms)[i][1].players[j])
+                          }
                         }
                       }
                     }
@@ -216,29 +220,15 @@ let packs
                   console.log(players)
                   set(ref(database, `rooms/${roomID}/players`),
                     players
-                  ).then(() => {
-                    onValue(ref(db, `rooms/${roomID}`), (snapshot) => {
-                      console.log(snapshot.val())
-                      if (snapshot.val() !== null){
-                        pickedGame = snapshot.val();
-                        console.log(pickedGame)
-                      }
-                      Game.data().showPlayers()
-                      Game.data().showHeader()
-                  });
-                }).then(() => {router.push('/game')})
+                  ).then(() => {             
+                  router.push('/game').then(() => {
+                    Game.data().startGame()
+                  })})
                 } else {
-                  onValue(ref(db, `rooms/${roomID}`), (snapshot) => {
-                    console.log(snapshot.val())
-                    if (snapshot.val() !== null){
-                      pickedGame = snapshot.val();
-                      console.log(pickedGame)
-                    }
-                    Game.data().showPlayers()
-                    Game.data().showHeader()
+                  players[index].inGame = true
+                  router.push('/game').then(() => {
+                    Game.data().startGame()
                   })
-                    players[index].inGame = true
-                    router.push('/game')
                 }
               }).then(() => {
                 localStorage.setItem('currentGame', roomID);
@@ -266,6 +256,144 @@ let packs
                   })
                 }
               }
+            },
+            getRandomPlayer: function(){
+              let activePlayers = []
+              for (let j = 0; j < pickedGame.players.length; j++){
+                if (pickedGame.players[j] !== null && pickedGame.players[j] !== undefined){
+                  if (pickedGame.players[j].inGame == true){
+                    activePlayers.push(pickedGame.players[j])
+                  }
+                }
+              }
+              return activePlayers[Math.floor(Math.random() * activePlayers.length)].id
+            },
+            startGame: function(){
+              turnPlayerIndex = 0
+              set(ref(database, `rooms/${localStorage.getItem('currentGame')}/started`), true)
+            },
+            nextTurn: function(){
+                turnPlayerIndex++
+                if (turnPlayerIndex > pickedGame.players.length-1){
+                  if (pickedGame.isHost == "Host"){
+                    turnPlayerIndex = 1
+                  } else {
+                    turnPlayerIndex = 0
+                  }
+                }
+                set(ref(database, `rooms/${localStorage.getItem('currentGame')}/gameLine/turn`), pickedGame.players[turnPlayerIndex])
+                set(ref(database, `rooms/${localStorage.getItem('currentGame')}/gameLine/voiting`), false)
+            },
+            informPickedQuestion: function(index){
+              set(ref(database, `rooms/${localStorage.getItem('currentGame')}/gameLine/pikedQuestion`), index)
+            },
+            updatePlayerPoints: function(){
+              let round = 0
+              console.log(pickedGame.players)
+              let index = pickedGame.players.findIndex(element => element.id == uid)
+              let pointsIndex = Math.floor(pickedGame.gameLine.pikedQuestion / (pickedGame.pickedPack.rounds[round].questions.length /pickedGame.pickedPack.rounds[round].categories.length))
+              let points = pickedGame.pickedPack.rounds[round].points[pointsIndex]
+              if (!pickedGame.players[index].points){
+                pickedGame.players[index].points = 0
+              }
+              let voitedTrue = Object.values(pickedGame.gameLine.voiting).filter(element => element == true)
+              let voitedFalse = Object.values(pickedGame.gameLine.voiting).filter(element => element == false)
+              let activePlayers = []
+              for (let j = 0; j < pickedGame.players.length; j++){
+                if (pickedGame.players[j] !== null && pickedGame.players[j] !== undefined){
+                  if (pickedGame.players[j].inGame == true){
+                    activePlayers.push(pickedGame.players[j])
+                  }
+                }
+              }
+              if (Math.ceil(activePlayers.length / 2) < voitedTrue.length){
+               pickedGame.players[index].points += points
+                Game.data().nextTurn()
+              } else if (Math.ceil(activePlayers.length / 2) < voitedFalse.length){
+                if (pickedGame.onWrongAnswer == 'MinusPoints'){
+                  pickedGame.players[index].points -= points
+                }
+                Game.data().nextTurn()
+              } else if (activePlayers.length == Object.values(pickedGame.gameLine.voiting).length){
+                Game.data().nextTurn()
+              }
+              set(ref(database, `rooms/${localStorage.getItem('currentGame')}/players`), this.pickedGame.players)
+            },
+            informVoiting: function(right){
+              right = ('Right' == right)
+              set(ref(database, `rooms/${localStorage.getItem('currentGame')}/gameLine/voiting/${uid}`), right)
+            },
+            hostVoited: function(right){
+              right = ('Right' == right)
+              let activePlayers = []
+              for (let j = 0; j < pickedGame.players.length; j++){
+                if (pickedGame.players[j] !== null && pickedGame.players[j] !== undefined){
+                  if (pickedGame.players[j].inGame == true){
+                    activePlayers.push(pickedGame.players[j])
+                  }
+                }
+              }
+              for (let i = 0; i < activePlayers.length; i++){
+                set(ref(database, `rooms/${localStorage.getItem('currentGame')}/gameLine/voiting/${activePlayers[i].id}`), right)
+              }
+            },
+            setGameDataListeners: function(){
+              console.log(pickedGame.ID)
+              onValue(ref(db, `rooms/${pickedGame.ID}/players`), (snapshot) => {
+                console.log(snapshot.val())
+                if (snapshot.val() !== null){
+                  pickedGame.players = snapshot.val();
+                  console.log(pickedGame)
+                  Game.data().showPlayers()
+                }
+              });
+              onValue(ref(db, `rooms/${pickedGame.ID}/gameLine/turn`), (snapshot) => {
+                console.log(snapshot.val())
+                if (snapshot.val() !== null){
+                  pickedGame.gameLine.turn = snapshot.val();
+                  console.log(pickedGame)
+                  if (pickedGame.gameLine.turn){
+                    console.log(pickedGame.gameLine.turn)
+                    Game.data().onQuestionPick()
+                  }
+                }
+              });
+              onValue(ref(db, `rooms/${pickedGame.ID}/gameLine/pikedQuestion`), (snapshot) => {
+                console.log(snapshot.val())
+                if (snapshot.val() !== null){
+                  pickedGame.gameLine.pikedQuestion = snapshot.val();
+                  console.log(pickedGame)
+                  if (pickedGame.gameLine.pikedQuestion){
+                    console.log(pickedGame.gameLine.pikedQuestion)
+                    Game.data().onGetQuestion()
+                  } else if (pickedGame.gameLine.pikedQuestion === 0){
+                    console.log(pickedGame.gameLine.pikedQuestion)
+                    Game.data().onGetQuestion()
+                  }
+                }
+              });
+              onValue(ref(db, `rooms/${pickedGame.ID}/gameLine/voiting`), (snapshot) => {
+                console.log(snapshot.val())
+                if (snapshot.val() !== null){
+                  pickedGame.gameLine.voiting = snapshot.val();
+                  console.log(pickedGame)
+                  if (pickedGame.gameLine.voiting){
+                    this.updatePlayerPoints()
+                    console.log(pickedGame.gameLine.voiting)
+                  }
+                }
+              });
+              onValue(ref(db, `rooms/${pickedGame.ID}/started`), (snapshot) => {
+                console.log(snapshot.val())
+                if (snapshot.val() !== null){
+                  pickedGame.started = snapshot.val();
+                  console.log(pickedGame)
+                  if (pickedGame.started){
+                    turnPlayerIndex = 0
+                    Game.data().showGameInfo()
+                  }
+                }
+              });
             },
             pickedGame: pickedGame,
             gameRooms: gameRooms,

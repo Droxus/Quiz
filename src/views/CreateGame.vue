@@ -33,6 +33,32 @@
         <label>Opened</label>
     </div>
     <div>
+        <label>Host</label>
+        <label class="switch">
+        <input type="checkbox" id="isHost">
+        <span class="slider round"></span>
+        </label>
+        <label>No host</label>
+    </div>
+    <div>
+        <label>On wrong answer</label>
+        <label>Minus points</label>
+        <label class="switch">
+        <input type="checkbox" id="onWrongAnswer">
+        <span class="slider round"></span>
+        </label>
+        <label>Nothing</label>
+    </div>
+    <div>
+        <label>Anser mode</label>
+    <select id="answerModeChoose">
+        <option value="firstPick" selected>First Pick</option>
+        <option value="firstClick">First Click</option>
+        <option value="everyone">Everyone</option>
+    </select>
+    </div>
+
+    <div>
         <label>Game Name</label>
         <input id="inputNameGame" type="text">
     </div>
@@ -109,10 +135,13 @@ export default {
                 let answerType = document.getElementById('answerType').checked ? 'Voice' : 'Text'
                 let toJoin = document.getElementById('toJoin').checked ? 'Opened' : 'Invited' 
                 let pickedPack = firebase.data().packs[document.getElementById('lobbyGame').getElementsByClassName('packName')[0].innerText]
+                let isHost = document.getElementById('isHost').checked ? 'NoHost' : 'Host' 
+                let onWrongAnswer = document.getElementById('onWrongAnswer').checked ? 'Nothing' : 'MinusPoints'
+                let answerModeChoose = document.getElementById('answerModeChoose').value
                 if (gameName == undefined && gameName == '' && gameName == null){
                     gameName = 'New Game'
                 }
-                firebase.data().createGame(gameName, answerType, toJoin, pickedPack)
+                firebase.data().createGame(gameName, answerType, toJoin, pickedPack, isHost, onWrongAnswer, answerModeChoose)
             }
         }
     }
