@@ -24,11 +24,14 @@ let uid
 let allUid = []
 let userName
 let gameID, allRooms = []
+let packID
 let gameRooms
 let players
 let pickedGame
 let turnPlayerIndex
-
+let answerTurn
+let localPacks
+let round = 0
 // const presenceRef = ref(db, "disconnectmessage");
 // Write a string when this client loses connection
 // onDisconnect(presenceRef).set("I disconnected!");
@@ -49,15 +52,41 @@ let packs
       },
         data(){
           return {
-            setData: function(path, obj){
-                console.log('start')
-                set(ref(database, path), obj)
-                .then(() => {console.log('fifnish')})
+            setPackData: function(obj){
+              if (obj.isGlobal){
+                if (localPacks || packs){
+                  do {
+                    packID = Number(String(Math.pow(10, 4) * Math.random()).replace('.', 0).slice(0, 12))
+                  } while (Object.keys(packs).findIndex(id => id == packID) !== -1 && Object.keys(localPacks).findIndex(id => id == packID) !== -1)
+                } else {
+                    packID = Number(String(Math.pow(10, 4) * Math.random()).replace('.', 0).slice(0, 12))
+                }
+                obj.ID = packID
+                set(ref(database, `packs/${packID}`), obj)
+              } else {
+                localPacks = JSON.parse(localStorage.getItem('localPacks')) 
+                    if (localPacks || packs){
+                      do {
+                        packID = Number(String(Math.pow(10, 4) * Math.random()).replace('.', 0).slice(0, 12))
+                      } while (Object.keys(localPacks).findIndex(id => id == packID) !== -1 && Object.keys(packs).findIndex(id => id == packID) !== -1)
+                    } else {
+                        packID = Number(String(Math.pow(10, 4) * Math.random()).replace('.', 0).slice(0, 12))
+                    }
+                    obj.ID = packID
+                    obj = {
+                      [packID]: obj
+                    }
+                    localStorage.setItem('localPacks', JSON.stringify(obj))
+              }
+              let likedPacks = Array.isArray(JSON.parse(localStorage.getItem('likedPacks'))) ? JSON.parse(localStorage.getItem('likedPacks')) : []
+              likedPacks.push(packID)
+              localStorage.setItem('likedPacks', JSON.stringify(likedPacks))
             },
             getPacksData: async function(){
               get(child(dbRef, 'packs/')).then((snapshot) => {
                 if (snapshot.exists()) {
                   packs = snapshot.val();
+                  // packs.shift()
                   console.log(packs)
                   return snapshot.val();
                 } else {
@@ -78,7 +107,7 @@ let packs
                   console.error(error);
                 });
                 do {
-                  uid = Math.floor(Math.random() * Math.pow(10, 12))
+                  uid = Number(String(Math.pow(10, 4) * Math.random()).replace('.', 0).slice(0, 12))
                   userName = `User${uid.toString().substring(0,4)}`
                 } while (allUid.findIndex(id => id == uid) !== -1)
 
@@ -96,7 +125,7 @@ let packs
                 name: userName
                }).then(() => {localStorage.setItem('userName', userName)})
             },
-            createGame: function(name, answerType, toJoin, pickedPack, isHost, onWrongAnswer, answerModeChoose){
+            createGame: function(name, answerType, toJoin, pickedPack, isHost, onWrongAnswer, timeOnPickQuestion, timeOnGiveAnswer){
               if (localStorage.getItem('currentGame') !== undefined){
                 if (this.gameRooms[localStorage.getItem('currentGame')] !== undefined){
                   if (this.gameRooms[localStorage.getItem('currentGame')].players !== undefined){
@@ -114,13 +143,13 @@ let packs
                   allRooms = Object.keys(snapshot.val())
                   allRooms.shift()
                 } else {
-                  return gameID = Math.floor(Math.random() * Math.pow(10, 12))
+                  return gameID = Number(String(Math.pow(10, 4) * Math.random()).replace('.', 0).slice(0, 4))
                 }
               }).catch((error) => {
                 console.error(error);
               });
               do {
-                gameID = Math.floor(Math.random() * Math.pow(10, 12))
+                gameID = Number(String(Math.pow(10, 4) * Math.random()).replace('.', 0).slice(0, 4))
               } while (allRooms.findIndex(id => id == gameID) !== -1)
               pickedGame = {
                 name: name,
@@ -132,20 +161,26 @@ let packs
                 toJoin: toJoin,
                 isHost: isHost,
                 onWrongAnswer: onWrongAnswer,
-                answerModeChoose: answerModeChoose,
                 pickedPack: pickedPack,
                 ID: gameID,
                 started: false,
+                timeOnPickQuestion: timeOnPickQuestion,
+                timeOnGiveAnswer: timeOnGiveAnswer,
                 gameLine: {
                   turn: false,
                   pikedQuestion: false,
-                  voiting: false
+                  voiting: false,
+                  answer: false,
+                  finished: false,
+                  wrongAnswer: false,
+                  round: 0,
                 },
                 players: [
                   {id: uid, name: userName, inGame: true}
                 ]
               }
               Game.data().pickedGame = pickedGame
+              console.log(pickedGame)
               set(ref(database, `rooms/${gameID}`), pickedGame).then(() => {
                 localStorage.setItem('currentGame', gameID);
                 players = []; 
@@ -285,17 +320,23 @@ let packs
                 set(ref(database, `rooms/${localStorage.getItem('currentGame')}/gameLine/voiting`), false)
             },
             informPickedQuestion: function(index){
+              console.log(index)
               set(ref(database, `rooms/${localStorage.getItem('currentGame')}/gameLine/pikedQuestion`), index)
             },
+            informWrongAnswer: function(randAnswer){
+              set(ref(database, `rooms/${localStorage.getItem('currentGame')}/gameLine/wrongAnswer`), randAnswer)
+            },
             updatePlayerPoints: function(){
-              let round = 0
               console.log(pickedGame.players)
-              let index = pickedGame.players.findIndex(element => element.id == uid)
-              let pointsIndex = Math.floor(pickedGame.gameLine.pikedQuestion / (pickedGame.pickedPack.rounds[round].questions.length /pickedGame.pickedPack.rounds[round].categories.length))
+              let index = pickedGame.players.findIndex(element => element.id == pickedGame.gameLine.turn.id)
+              console.log(uid)
+              console.log(index)
+              let pointsIndex = Math.abs(pickedGame.gameLine.pikedQuestion - Math.floor(pickedGame.gameLine.pikedQuestion / Array.from(document.getElementsByClassName('points')).length) * Array.from(document.getElementsByClassName('points')).length)
               let points = pickedGame.pickedPack.rounds[round].points[pointsIndex]
               if (!pickedGame.players[index].points){
                 pickedGame.players[index].points = 0
               }
+              console.log(pickedGame.players[index])
               let voitedTrue = Object.values(pickedGame.gameLine.voiting).filter(element => element == true)
               let voitedFalse = Object.values(pickedGame.gameLine.voiting).filter(element => element == false)
               let activePlayers = []
@@ -306,17 +347,19 @@ let packs
                   }
                 }
               }
-              if (Math.ceil(activePlayers.length / 2) < voitedTrue.length){
+              if (Math.ceil(activePlayers.length / 2) - 1 < voitedTrue.length){
                pickedGame.players[index].points += points
                 Game.data().nextTurn()
-              } else if (Math.ceil(activePlayers.length / 2) < voitedFalse.length){
+              } else if (Math.ceil(activePlayers.length / 2) - 1 < voitedFalse.length){
                 if (pickedGame.onWrongAnswer == 'MinusPoints'){
                   pickedGame.players[index].points -= points
                 }
                 Game.data().nextTurn()
-              } else if (activePlayers.length == Object.values(pickedGame.gameLine.voiting).length){
+              } else if ((activePlayers.length-1) == Object.values(pickedGame.gameLine.voiting).length){
                 Game.data().nextTurn()
               }
+              console.log(this.pickedGame.players)
+              console.log(pickedGame.players)
               set(ref(database, `rooms/${localStorage.getItem('currentGame')}/players`), this.pickedGame.players)
             },
             informVoiting: function(right){
@@ -335,6 +378,16 @@ let packs
               }
               for (let i = 0; i < activePlayers.length; i++){
                 set(ref(database, `rooms/${localStorage.getItem('currentGame')}/gameLine/voiting/${activePlayers[i].id}`), right)
+              }
+            },
+            nextRound: function(){
+              if (round < pickedGame.pickedPack.rounds.length-1){
+                round++
+                set(ref(database, `rooms/${localStorage.getItem('currentGame')}/gameLine/round/`), round)
+                Game.data().nextRound()
+              } else {
+                set(ref(database, `rooms/${localStorage.getItem('currentGame')}/gameLine/finished/`), true)
+                Game.data().announceWinner()
               }
             },
             setGameDataListeners: function(){
@@ -394,12 +447,48 @@ let packs
                   }
                 }
               });
+              onValue(ref(db, `rooms/${pickedGame.ID}/gameLine/answer/`), (snapshot) => {
+                console.log(snapshot.val())
+                if (snapshot.val() !== null){
+                  pickedGame.gameLine.answer = snapshot.val();
+                  Game.data().onAnswered()
+                }
+              });
+              onValue(ref(db, `rooms/${pickedGame.ID}/gameLine/round/`), (snapshot) => {
+                console.log(snapshot.val())
+                if (snapshot.val() !== null && snapshot.val() !== pickedGame.gameLine.round){
+                  pickedGame.gameLine.round = snapshot.val();
+                  Game.data().nextRound()
+                }
+              });
+              onValue(ref(db, `rooms/${pickedGame.ID}/gameLine/finished/`), (snapshot) => {
+                console.log(snapshot.val())
+                if (snapshot.val() !== null){
+                  pickedGame.gameLine.finished = snapshot.val();
+                  if (pickedGame.gameLine.finished){
+                    Game.data().announceWinner()
+                  }
+                }
+              });
+              onValue(ref(db, `rooms/${pickedGame.ID}/gameLine/wrongAnswer`), (snapshot) => {
+                if (snapshot.val() !== null){
+                  pickedGame.gameLine.wrongAnswer = snapshot.val();
+                  Game.data().wrongAnswersAdd(pickedGame.gameLine.wrongAnswer)
+                }
+              });
+            },
+            onAnswer: function(answer = 'No Answer', answerTurn){
+              set(ref(database, `rooms/${localStorage.getItem('currentGame')}/gameLine/answer/`), {
+                answer: answer,
+                turn: answerTurn
+              })
             },
             pickedGame: pickedGame,
             gameRooms: gameRooms,
             uid: uid,
             userName: userName,
-            packs: packs
+            packs: packs,
+            round: round
           }
         }
       }

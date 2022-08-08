@@ -10,6 +10,7 @@
             :author="pack.author"
             :name="pack.name"
             :rounds="pack.rounds"
+            :roomID="pack.ID"
             />
     </div>
     <div id="lobbyGame">
@@ -50,18 +51,13 @@
         <label>Nothing</label>
     </div>
     <div>
-        <label>Anser mode</label>
-    <select id="answerModeChoose">
-        <option value="firstPick" selected>First Pick</option>
-        <option value="firstClick">First Click</option>
-        <option value="everyone">Everyone</option>
-    </select>
-    </div>
-
-    <div>
         <label>Game Name</label>
         <input id="inputNameGame" type="text">
     </div>
+    <label>Time on pick question</label>
+    <input id="timeOnPickQuestionInp" type="number" placeholder="10">
+    <label>Time on give answer</label>
+    <input id="timeOnGiveAnswerInp" type="number" placeholder="20">
         </div>
         <div id="lobby">
 
@@ -121,7 +117,9 @@ export default {
     },
     data() {
         return {
-            packs: firebase.data().packs,
+            packs: Object.assign(JSON.parse(localStorage.getItem('localPacks')), firebase.data().packs ? Object.keys(firebase.data().packs)
+            .filter(element => JSON.parse(localStorage.getItem('likedPacks')).includes(element)).reduce((obj, key) => {obj[key] = firebase.data().packs[key]; return obj}, {}) : {}, 
+            firebase.data().packs ? firebase.data().packs: {}),
             closePickPack: function(){
                 document.getElementById('lobbyGame').style.display = 'none'
                 document.getElementById('pickPackBlock').style.display = 'block'
@@ -134,14 +132,25 @@ export default {
                 let gameName = document.getElementById('inputNameGame').value
                 let answerType = document.getElementById('answerType').checked ? 'Voice' : 'Text'
                 let toJoin = document.getElementById('toJoin').checked ? 'Opened' : 'Invited' 
-                let pickedPack = firebase.data().packs[document.getElementById('lobbyGame').getElementsByClassName('packName')[0].innerText]
+                let pickedPack
+                if (firebase.data().packs){
+                    if (firebase.data().packs[document.getElementById('lobbyGame').getElementsByClassName('pack')[0].getAttribute('roomid')]){
+                        pickedPack = firebase.data().packs[document.getElementById('lobbyGame').getElementsByClassName('pack')[0].getAttribute('roomid')]
+                    }
+                }
+                if (JSON.parse(localStorage.getItem('localPacks'))){
+                    if (JSON.parse(localStorage.getItem('localPacks'))[document.getElementById('lobbyGame').getElementsByClassName('pack')[0].getAttribute('roomid')]){
+                        pickedPack = JSON.parse(localStorage.getItem('localPacks'))[document.getElementById('lobbyGame').getElementsByClassName('pack')[0].getAttribute('roomid')]
+                    }
+                }
                 let isHost = document.getElementById('isHost').checked ? 'NoHost' : 'Host' 
                 let onWrongAnswer = document.getElementById('onWrongAnswer').checked ? 'Nothing' : 'MinusPoints'
-                let answerModeChoose = document.getElementById('answerModeChoose').value
+                let timeOnPickQuestion = document.getElementById('timeOnPickQuestionInp').value !== '' ? Math.max(Math.min(Math.abs(Number(document.getElementById('timeOnPickQuestionInp').value)), 60), 5) : 10
+                let timeOnGiveAnswer = document.getElementById('timeOnGiveAnswerInp').value !== '' ? Math.max(Math.min(Math.abs(Number(document.getElementById('timeOnGiveAnswerInp').value)), 60), 5) : 20
                 if (gameName == undefined && gameName == '' && gameName == null){
                     gameName = 'New Game'
                 }
-                firebase.data().createGame(gameName, answerType, toJoin, pickedPack, isHost, onWrongAnswer, answerModeChoose)
+                firebase.data().createGame(gameName, answerType, toJoin, pickedPack, isHost, onWrongAnswer, timeOnPickQuestion, timeOnGiveAnswer)
             }
         }
     }

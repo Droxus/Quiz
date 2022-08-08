@@ -260,7 +260,7 @@ input:checked + .slider:before {
 }
 .categoriesRoundBlock{
   display: grid;
-  grid-template-rows: 30% 70%;
+  grid-template-rows: 2vh 6vh;
 }
 .packCategoriesLbl{
   height: 20px;
@@ -270,6 +270,7 @@ input:checked + .slider:before {
   /* display: none; */
   flex-wrap: wrap;
   word-break: break-word;
+  overflow: scroll;
 }
 .roundOfCategories{
   text-align: center;

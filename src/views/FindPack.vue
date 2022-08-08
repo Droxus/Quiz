@@ -13,6 +13,7 @@
             :author="pack.author"
             :name="pack.name"
             :rounds="pack.rounds"
+            :roomID="pack.ID"
             />
         </div>
     </main> 
@@ -58,7 +59,7 @@ export default {
     },
     data() {
         return {
-            packs: firebase.data().packs,
+            packs: Object.assign(Object.keys(firebase.data().packs).filter(element => JSON.parse(localStorage.getItem('likedPacks')).includes(element)).reduce((obj, key) => {obj[key] = firebase.data().packs[key]; return obj}, {}), firebase.data().packs),
             closePackForm: function(){
                 document.getElementById('packQuestionForm').style.display = 'none'
                 while (document.getElementById('packQuestionForm').getElementsByTagName('main')[0].firstElementChild){

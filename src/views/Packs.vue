@@ -6,7 +6,7 @@ export default {
         components: {
         PackRounds
     },
-    props: ['author', 'name', 'rounds'],
+    props: ['author', 'name', 'rounds', 'roomID'],
     data() {
         return {
            nextRound: function(event){
@@ -58,20 +58,43 @@ export default {
                                 document.getElementById('lobbyGame').style.display = 'block'
                                 document.getElementById('pickPackBlock').style.display = 'none'
                                 document.getElementById('lobbyGame').insertAdjacentElement('afterbegin', event.currentTarget)
-                                pickedPack = firebase.data().packs[event.currentTarget.getElementsByClassName('packName')[0].innerText]
+                                if (firebase.data().packs){
+                                    if (firebase.data().packs[event.currentTarget.getAttribute('roomid')]){
+                                        pickedPack = firebase.data().packs[event.currentTarget.getAttribute('roomid')]
+                                    }
+                                }
+                                if (JSON.parse(localStorage.getItem('localPacks'))){
+                                    if (JSON.parse(localStorage.getItem('localPacks'))[event.currentTarget.getAttribute('roomid')]){
+                                        pickedPack = JSON.parse(localStorage.getItem('localPacks'))[event.currentTarget.getAttribute('roomid')]
+                                    }
+                                }
                             break;      
                 }
 
-  },
-  pickedPack: pickedPack,
+            },
+            onStar: function(event){
+                event.stopImmediatePropagation()
+                if (!event.target.classList.contains('liked')){
+                    let likedPacks = Array.isArray(JSON.parse(localStorage.getItem('likedPacks'))) ? JSON.parse(localStorage.getItem('likedPacks')) : []
+                    likedPacks.push(event.target.parentElement.getAttribute('roomid'))
+                    localStorage.setItem('likedPacks', JSON.stringify(likedPacks))
+                    event.target.classList.add('liked')
+                } else {
+                    let likedPacks = Array.isArray(JSON.parse(localStorage.getItem('likedPacks'))) ? JSON.parse(localStorage.getItem('likedPacks')) : []
+                    localStorage.setItem('likedPacks', JSON.stringify(likedPacks.filter(element => element !== event.target.parentElement.getAttribute('roomid'))))
+                    event.target.classList.remove('liked')
+                }
+            },
+            likedPack: JSON.parse(localStorage.getItem('likedPacks')).find(element => element == this.roomID) ? true : false,
+            pickedPack: pickedPack,
         }
     }
 }
 </script>
 
 <template>
-        <div class="pack" @click="onPack($event)">
-            <img class="packStar" src="/img/star.png" alt="star">
+        <div class="pack" @click="onPack($event)" v-bind:roomID="roomID">
+            <img class="packStar" src="/img/star.png" alt="star" @click="onStar($event)" :class="{liked: likedPack}">
                 <label class="packName">{{name}}</label>
                 <label class="packAuthor">{{author}}</label>
                 <div class="packCategoriesBlock">
@@ -99,6 +122,9 @@ export default {
     grid-template-rows: 30% 70%;
     grid-template-areas: "packStar packName packAuthor"
     "packStar packCategories packCategories";
+}
+.liked{
+    background: gold;
 }
 </style>
 

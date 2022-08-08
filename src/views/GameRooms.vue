@@ -1,5 +1,5 @@
 <template>
-            <div class="gamesOnPick" @click="onGameJoin($event)" v-bind:gameId="gameId">
+            <div class="gamesOnPick" v-if="joinType=='Opened'" @click="onGameJoin($event)" v-bind:gameId="gameId">
                 <label>{{gameName}}</label>
                 <label>{{host}}</label>
                 <label>{{players}}</label>
@@ -10,7 +10,7 @@
 import firebase from '../firebase'
 
 export default {
-    props: ['gameName', 'host', 'players', 'gameId'],
+    props: ['gameName', 'host', 'players', 'gameId', 'joinType'],
     data() {
         return {
             onGameJoin: function(event){

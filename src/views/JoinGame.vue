@@ -5,6 +5,8 @@
     <header>
         <h1>Join Game</h1>
         <router-link :to="'/'">Back</router-link>
+        <input id="codeToJoinGameInp" type="number" min="0" max="4" maxlength="4" pattern="[0-9]{4}" placeholder="Code" size="4">
+        <button @click="onJoinByCodeBtn()">Join</button>
     </header>
     <main>
         <div id="allGames">
@@ -14,6 +16,7 @@
             :host="gameRoom.host.name"
             :players="gameRoom.players ? gameRoom.players.length : 0"
             :gameId="gameRoom.ID"
+            :joinType="gameRoom.toJoin"
             />
         </div>
     </main>
@@ -46,7 +49,12 @@ export default {
     },
     data() {
         return {
-            gameRooms: firebase.data().gameRooms
+            gameRooms: firebase.data().gameRooms,
+            onJoinByCodeBtn: function(){
+                if (Object.keys(firebase.data().gameRooms).findIndex(element => element == document.getElementById('codeToJoinGameInp').value) !== -1){
+                    firebase.data().joinGameRoom(document.getElementById('codeToJoinGameInp').value)
+                }
+            }
         }
     }
 }

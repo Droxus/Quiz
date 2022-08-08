@@ -16,47 +16,47 @@
         <input class="points" value="400" type="number">
         <input class="points" value="500" type="number">
         <input class="category">
-        <div @click="onclick($event)"></div>
-        <div @click="onclick($event)"></div>
-        <div @click="onclick($event)"></div>
-        <div @click="onclick($event)"></div>
-        <div @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
         <input class="category">
-        <div @click="onclick($event)"></div>
-        <div @click="onclick($event)"></div>
-        <div @click="onclick($event)"></div>
-        <div @click="onclick($event)"></div>
-        <div @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
         <input class="category">
-        <div @click="onclick($event)"></div>
-        <div @click="onclick($event)"></div>
-        <div @click="onclick($event)"></div>
-        <div @click="onclick($event)"></div>
-        <div @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
         <input class="category">
-        <div @click="onclick($event)"></div>
-        <div @click="onclick($event)"></div>
-        <div @click="onclick($event)"></div>
-        <div @click="onclick($event)"></div>
-        <div @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
         <input class="category">
-        <div @click="onclick($event)"></div>
-        <div @click="onclick($event)"></div>
-        <div @click="onclick($event)"></div>
-        <div @click="onclick($event)"></div>
-        <div @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
         <input class="category">
-        <div @click="onclick($event)"></div>
-        <div @click="onclick($event)"></div>
-        <div @click="onclick($event)"></div>
-        <div @click="onclick($event)"></div>
-        <div @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
         <input class="category">
-        <div @click="onclick($event)"></div>
-        <div @click="onclick($event)"></div>
-        <div @click="onclick($event)"></div>
-        <div @click="onclick($event)"></div>
-        <div @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
+        <div class="questions" @click="onclick($event)"></div>
     </div>
 </main>
     <footer>
@@ -93,6 +93,7 @@
         <div>
             <label>Only for me</label>
             <label class="switch">
+            <input type="checkbox" id="isGlobalPack">
             <span class="slider round"></span>
             </label>
             <label>For All</label>
@@ -193,6 +194,7 @@ function onSave(){
 }
 pack.name = document.getElementById('nameOfPack').value
 pack.author = firebase.data().userName
+pack.isGlobal = document.getElementById('isGlobalPack').checked
     for (let round = 0; round < Array.from(document.getElementById('createPacke').getElementsByClassName('tabelQuestionCreate')).length; round++){
         pack.rounds.push({
             points: [],
@@ -204,25 +206,35 @@ pack.author = firebase.data().userName
         Array.from(document.getElementById('createPacke').getElementsByClassName('tabelQuestionCreate')[round].getElementsByClassName('points')).forEach(element => {
             pack.rounds[round].points.push(Number(element.value))
         });
-        Array.from(document.getElementById('createPacke').getElementsByClassName('tabelQuestionCreate')[round].getElementsByClassName('category')).forEach(element => {
-            if (element.value !== ''){
-                pack.rounds[round].categories.push(element.value)
+        for (let category = 0; category < Array.from(document.getElementById('createPacke').getElementsByClassName('tabelQuestionCreate')[round].getElementsByClassName('category')).length; category++){
+            if (Array.from(document.getElementById('createPacke').getElementsByClassName('tabelQuestionCreate')[round].getElementsByClassName('category'))[category].value !== ''){
+                pack.rounds[round].categories.push(Array.from(document.getElementById('createPacke').getElementsByClassName('tabelQuestionCreate')[round].getElementsByClassName('category'))[category].value)
+            } else {
+                if (Array.from(document.getElementsByClassName('questionMark')).length > 0) {
+                    let index = Array.from(document.getElementById('createPacke').getElementsByClassName('tabelQuestionCreate')[round].getElementsByClassName('questions'))
+                    .findIndex(element => element == Array.from(document.getElementsByClassName('questionMark'))[Array.from(document.getElementsByClassName('questionMark')).length-1].parentElement)
+                    console.log(index)                    
+                    if ((index+1) > category * Array.from(document.getElementsByClassName('points')).length){
+                        pack.rounds[round].categories.push(`Category ${category+1}`)
+                    }
+                }
             }
-        });
+        }
         for (let i = 0; i < pack.rounds[round].points.length * pack.rounds[round].categories.length; i++){
             pack.rounds[round].questions[i] = ''
             pack.rounds[round].answers[i] = ''
             pack.rounds[round].wrongAnswers[i] = ''
         }
+        console.log()
         Array.from(document.getElementById('createPacke').getElementsByClassName('tabelQuestionCreate')[round].getElementsByClassName('questionMark')).forEach(element => {
             let index = Array.from(document.getElementById('createPacke').getElementsByClassName('tabelQuestionCreate')[round].getElementsByTagName('div')).indexOf(element.parentElement)
             pack.rounds[round].questions[index] = element.parentElement.getAttribute('question')
             pack.rounds[round].answers[index] = element.parentElement.getAttribute('answer')
-            pack.rounds[round].wrongAnswers[index] = element.parentElement.getAttribute('wrongAnswers')
+            pack.rounds[round].wrongAnswers[index] = Array.from(JSON.parse(element.parentElement.getAttribute('wrongAnswers'))).filter(element => element !== '')
         })
     }
     console.log(pack)
-    firebase.data().setData(`packs/${pack.name}`, pack)
+    firebase.data().setPackData(pack)
     router.push('/')
 } else {
     console.log('Enter Pack Name')
@@ -240,7 +252,7 @@ function onclick(event){
     }
     if (currentInputPick.getAttribute('wrongAnswers') !== null){
         for (let i = 0; i < Array.from(document.getElementsByClassName('wrongAnswerInputArea')).length; i++){
-            let arr = currentInputPick.getAttribute('wrongAnswers').split(',', 3)
+            let arr = JSON.parse(currentInputPick.getAttribute('wrongAnswers'))
             Array.from(document.getElementsByClassName('wrongAnswerInputArea'))[i].value = arr[i]
         }
     }
@@ -252,7 +264,7 @@ function onCloseQuestion(){
     currentInputPick.setAttribute('answer', document.getElementById('answerInputArea').value)
     let arrayWrongAnswers = []
     Array.from(document.getElementsByClassName('wrongAnswerInputArea')).forEach(element => arrayWrongAnswers.push(element.value))
-    currentInputPick.setAttribute('wrongAnswers', arrayWrongAnswers)
+    currentInputPick.setAttribute('wrongAnswers', JSON.stringify(arrayWrongAnswers))
     document.getElementById('questionInputArea').value = ''
     document.getElementById('answerInputArea').value = ''
     Array.from(document.getElementsByClassName('wrongAnswerInputArea')).forEach(element => element.value = '')
@@ -272,7 +284,7 @@ function onDoneQuestion(){
     currentInputPick.setAttribute('answer', document.getElementById('answerInputArea').value)
     let arrayWrongAnswers = []
     Array.from(document.getElementsByClassName('wrongAnswerInputArea')).forEach(element => arrayWrongAnswers.push(element.value))
-    currentInputPick.setAttribute('wrongAnswers', arrayWrongAnswers)
+    currentInputPick.setAttribute('wrongAnswers', JSON.stringify(arrayWrongAnswers))
     document.getElementById('questionInputArea').value = ''
     document.getElementById('answerInputArea').value = ''
     Array.from(document.getElementsByClassName('wrongAnswerInputArea')).forEach(element => element.value = '')
