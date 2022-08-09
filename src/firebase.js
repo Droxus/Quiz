@@ -173,6 +173,7 @@ let packs
                   answer: false,
                   finished: false,
                   wrongAnswer: false,
+                  paused: false,
                   round: 0,
                 },
                 players: [
@@ -320,7 +321,6 @@ let packs
                 set(ref(database, `rooms/${localStorage.getItem('currentGame')}/gameLine/voiting`), false)
             },
             informPickedQuestion: function(index){
-              console.log(index)
               set(ref(database, `rooms/${localStorage.getItem('currentGame')}/gameLine/pikedQuestion`), index)
             },
             informWrongAnswer: function(randAnswer){
@@ -383,12 +383,19 @@ let packs
             nextRound: function(){
               if (round < pickedGame.pickedPack.rounds.length-1){
                 round++
+                set(ref(database, `rooms/${localStorage.getItem('currentGame')}/gameLine/pikedQuestion`), false)
                 set(ref(database, `rooms/${localStorage.getItem('currentGame')}/gameLine/round/`), round)
                 Game.data().nextRound()
               } else {
                 set(ref(database, `rooms/${localStorage.getItem('currentGame')}/gameLine/finished/`), true)
                 Game.data().announceWinner()
               }
+            },
+            pauseGame: function(){
+              set(ref(database, `rooms/${localStorage.getItem('currentGame')}/gameLine/paused/`), true)
+            },
+            resumeGame: function(){
+              set(ref(database, `rooms/${localStorage.getItem('currentGame')}/gameLine/paused/`), false)
             },
             setGameDataListeners: function(){
               console.log(pickedGame.ID)
@@ -404,7 +411,8 @@ let packs
                 console.log(snapshot.val())
                 if (snapshot.val() !== null){
                   pickedGame.gameLine.turn = snapshot.val();
-                  console.log(pickedGame)
+                  document.getElementById('questionBlock').style.display = 'none'
+                  document.getElementById('tableWithQuestions').style.display = 'grid'
                   if (pickedGame.gameLine.turn){
                     console.log(pickedGame.gameLine.turn)
                     Game.data().onQuestionPick()
@@ -474,6 +482,12 @@ let packs
                 if (snapshot.val() !== null){
                   pickedGame.gameLine.wrongAnswer = snapshot.val();
                   Game.data().wrongAnswersAdd(pickedGame.gameLine.wrongAnswer)
+                }
+              });
+              onValue(ref(db, `rooms/${pickedGame.ID}/gameLine/paused`), (snapshot) => {
+                if (snapshot.val() !== null){
+                  pickedGame.gameLine.paused = snapshot.val();
+                  Game.data().pauseGame()
                 }
               });
             },

@@ -1,26 +1,30 @@
 <template>
 <div id="game">
-<div id="showBlock">
-    <label id="mainLbl"></label>
-    <label id="subMainLbl"></label>
-</div>    
-<div id="gameBlock">
-<div id="headerOfGame">
-</div>
-<div id="tableWithQuestions">
+    <div id="showBlock">
+        <label id="mainLbl"></label>
+        <label id="subMainLbl"></label>
+    </div>    
+    <div id="gameBlock">
+        <div id="headerOfGame">
+        </div>
+        <div id="tableWithQuestions">
 
-</div>
-<div id="questionBlock">
-    <label id="questionLbl"></label>
-    <div id="testTypeAnswer"><form></form></div>
-    <label id="answerLbl"></label>
-    <input id="answerInp" type="text">
-    <label id="rightAnswerLbl"></label>
-</div>
-<div id="playersBlock">
-    
-</div>
-</div>
+        </div>
+        <div id="questionBlock">
+            <label id="questionLbl"></label>
+            <div id="testTypeAnswer"><form></form></div>
+            <label id="answerLbl"></label>
+            <input id="answerInp" type="text">
+            <label id="rightAnswerLbl"></label>
+        </div>
+        <div id="playersBlock">
+            
+        </div>
+    </div>
+    <div id="pauseWindow">
+        <label>Game Paused</label>
+        <button id="resumeGameBtn" @click="onResumeGame()">Resume</button>
+    </div>
 </div>
 </template>
 
@@ -86,7 +90,7 @@ function onAnsweredBtn(){
                     } 
                     firebase.data().onAnswer(answer, indexAnswer)
                 }
-                if (document.getElementById('onAnsweredBtn')){
+                while (document.getElementById('onAnsweredBtn')){
                     document.getElementById('onAnsweredBtn').remove()
                 }
                 document.getElementById('answerLbl').innerText = document.getElementById('answerInp').value
@@ -155,6 +159,16 @@ function onAnsweredBtn(){
                     }
                 }
             }
+             function onSkipRound(){
+                if (firebase.data().pickedGame.host.id == firebase.data().uid){
+                    if (document.getElementById('questionBlock').style.display !== 'none'){
+                        firebase.data().onAnswer(false, indexAnswer)
+                        document.getElementById('questionBlock').style.display = 'none'
+                        document.getElementById('tableWithQuestions').style.display = 'grid'
+                    }
+                    firebase.data().nextRound()
+                }
+            }
 export default {
     data() {
         return {
@@ -199,6 +213,14 @@ export default {
                                 navigator.clipboard.writeText(event.target.innerText)
                             })
                         }
+                    } else {
+                        document.getElementById('headerOfGame').insertAdjacentHTML('beforeend', `
+                        <button id="pauseGame">Pause</button>
+                        <button id="skipQuestion">Skip QN</button>
+                        <button id="skipRound">Skip Round</button>`)
+                        document.getElementById('pauseGame').addEventListener('click', this.onPauseGameBtn)
+                        document.getElementById('skipQuestion').addEventListener('click', this.onSkipQuestionBtn)
+                        document.getElementById('skipRound').addEventListener('click', this.onSkipRoundBtn)
                     }   
                 } else {
                     document.getElementById('headerOfGame').insertAdjacentHTML('beforeend', `
@@ -259,6 +281,13 @@ export default {
                                     if (document.getElementById('gameCode')){
                                         document.getElementById('gameCode').remove()
                                     }
+                                    document.getElementById('headerOfGame').insertAdjacentHTML('beforeend', `
+                                    <button id="pauseGame">Pause</button>
+                                    <button id="skipQuestion">Skip QN</button>
+                                    <button id="skipRound">Skip Round</button>`)
+                                    document.getElementById('pauseGame').addEventListener('click', this.onPauseGameBtn)
+                                    document.getElementById('skipQuestion').addEventListener('click', this.onSkipQuestionBtn)
+                                    document.getElementById('skipRound').addEventListener('click', this.onSkipRoundBtn)
                                 }
     
                         this.nextTurn()  
@@ -267,6 +296,78 @@ export default {
 
                 }, 2000)
 
+            },
+            onPauseGameBtn: function(){
+                if (firebase.data().pickedGame.host.id == firebase.data().uid){
+                    this.pauseGame
+                    firebase.data().pauseGame()
+                }
+            },
+            pauseGame: function(){
+                if (firebase.data().pickedGame.gameLine.paused){
+                    document.getElementById('pauseWindow').style.display = 'grid'
+                    document.getElementById('resumeGameBtn').style.display = 'none'
+                    console.log(timerOnPickQn, timerOnAnswer, intervalTimer, intervalTimerAnswer)
+                    clearTimeout(timerOnPickQn)
+                    clearTimeout(timerOnAnswer)
+                    clearInterval(intervalTimer)
+                    clearInterval(intervalTimerAnswer)
+                    if (firebase.data().pickedGame.host.id == firebase.data().uid){
+                        document.getElementById('resumeGameBtn').style.display = 'block'
+                    }
+                } else {
+                    document.getElementById('pauseWindow').style.display = 'none'
+                    let delay = document.getElementById('timerForGame').innerText
+                    if (document.getElementById('tableWithQuestions').style.display !== 'none'){
+                        timer = delay
+                        intervalTimer = setInterval(() => {
+                            timer--
+                            document.getElementById('timerForGame').innerText = timer
+                        }, 1000)
+                        timerOnPickQn = setTimeout(() => {
+                            console.log('Sheet')
+                            this.pickRandomQuestion()
+                            clearInterval(intervalTimer)
+                        }, delay * 1000)
+                    } else {
+                        timer = delay
+                        timerOnAnswer = setTimeout(onAnsweredBtn, delay * 1000)
+                        intervalTimer = setInterval(() => {
+                            timer--
+                            document.getElementById('timerForGame').innerText = timer
+                        }, 1000)
+                    }
+                }
+            },
+            onSkipQuestionBtn: function(){
+                if (firebase.data().pickedGame.host.id == firebase.data().uid){
+                    if (document.getElementById('questionBlock').style.display !== 'none'){
+                        firebase.data().onAnswer(false, indexAnswer)
+                        document.getElementById('questionBlock').style.display = 'none'
+                        document.getElementById('tableWithQuestions').style.display = 'grid'
+                        if (Array.from(document.getElementsByClassName('questionMark')).length > 0){
+                            firebase.data().nextTurn()
+                        } else {
+                            onSkipRound()
+                        }
+                    }
+                }
+            },
+            onSkipRoundBtn: function(){
+                if (firebase.data().pickedGame.host.id == firebase.data().uid){
+                    if (document.getElementById('questionBlock').style.display !== 'none'){
+                        firebase.data().onAnswer(false, indexAnswer)
+                        document.getElementById('questionBlock').style.display = 'none'
+                        document.getElementById('tableWithQuestions').style.display = 'grid'
+                    }
+                    firebase.data().nextRound()
+                }
+            },
+            onResumeGame: function(){
+                if (firebase.data().pickedGame.host.id == firebase.data().uid){
+                    document.getElementById('pauseWindow').style.display = 'none'
+                    firebase.data().resumeGame()
+                }
             },
             wrongAnswersAdd: function(randAnswer){
                 if (firebase.data().pickedGame.pickedPack.rounds[round].wrongAnswers){
@@ -316,7 +417,7 @@ export default {
                 }, firebase.data().pickedGame.timeOnPickQuestion * 1000)
             },
             onQuestion: function(event){
-                if (firebase.data().uid == firebase.data().pickedGame.gameLine.turn.id){
+                if (firebase.data().uid == firebase.data().pickedGame.gameLine.turn.id && Array.from(event.currentTarget.getElementsByClassName('questionMark')).length > 0){
                 if (document.getElementsByClassName('markAnswerBtns').length > 0){
                     Array.from(document.getElementsByClassName('markAnswerBtns')).forEach(element => element.remove())
                 }
@@ -371,7 +472,7 @@ export default {
                     indexAnswer = firebase.data().pickedGame.gameLine.pikedQuestion
                     document.getElementById('questionLbl').innerText = firebase.data().pickedGame.pickedPack.rounds[round].questions[indexAnswer]
                     document.getElementById('testTypeAnswer').style.display = 'none'
-                    if (document.getElementById('onAnsweredBtn')){
+                    while (document.getElementById('onAnsweredBtn')){
                         document.getElementById('onAnsweredBtn').remove()
                     }
                     document.getElementById('answerInp').style.display = 'none'
@@ -438,6 +539,10 @@ export default {
 
             },
             nextRound: function(){
+                clearTimeout(timerOnPickQn)
+                clearTimeout(timerOnAnswer)
+                clearInterval(intervalTimer)
+                clearInterval(intervalTimerAnswer)
                 round = firebase.data().pickedGame.gameLine.round
                 document.getElementById('showBlock').style.display = 'grid'
                 while (document.getElementById('showBlock').firstElementChild){
@@ -622,6 +727,16 @@ export default {
     height: 100vh;
     background: rgb(20, 131, 146);
     z-index: 9;
+}
+#pauseWindow{
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    backdrop-filter: blur(4px) brightness(60%);
+    z-index: 9999;
 }
 @media screen and (max-device-width: 1024px) {
   #tableWithQuestions > * {
