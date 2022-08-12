@@ -1,24 +1,27 @@
 import { initializeApp } from 'firebase/app';
-import { getDatabase, ref, push, set, child, get, update, onDisconnect, onValue, serverTimestamp } from "firebase/database";
+import { getDatabase, ref, push, set, child, get, update, onDisconnect, onValue, serverTimestamp, remove } from "firebase/database";
+import { getStorage, ref as sRef, uploadBytes, getDownloadURL, getMetadata } from "firebase/storage";
 import router from './router/index.js'
 import Game from './views/Game.vue'
+import Main from './main.js'
 const firebaseConfig = {
     apiKey: "API_KEY",
   authDomain: "PROJECT_ID.firebaseapp.com",
-  // The value of `databaseURL` depends on the location of the database
   databaseURL: "https://quiz-ef7f5-default-rtdb.europe-west1.firebasedatabase.app/",
   projectId: "PROJECT_ID",
   storageBucket: "PROJECT_ID.appspot.com",
   messagingSenderId: "SENDER_ID",
   appId: "APP_ID",
-  // For Firebase JavaScript SDK v7.20.0 and later, `measurementId` is an optional field
   measurementId: "G-MEASUREMENT_ID",
+  storageBucket: 'gs://quiz-ef7f5.appspot.com'
 }
 
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const dbRef = ref(getDatabase());
 const db = getDatabase();
+const storage = getStorage(app);
+const storageRef = sRef(storage, 'some-child');
 
 let uid
 let allUid = []
@@ -32,19 +35,9 @@ let turnPlayerIndex
 let answerTurn
 let localPacks
 let round = 0
-// const presenceRef = ref(db, "disconnectmessage");
-// Write a string when this client loses connection
-// onDisconnect(presenceRef).set("I disconnected!");
-
-
-
-
-//  === === === AUTH === === ===
-
-
-//  === === === OTHER === === ===
-
 let packs
+let myIcon
+let firebaseLoaded = 0
 
     export default {
       components: {
@@ -52,6 +45,12 @@ let packs
       },
         data(){
           return {
+            firebaseLoaded: function(){
+              firebaseLoaded++
+              if (firebaseLoaded > 3){
+                Main.data().closeLoader()
+              }
+            },
             setPackData: function(obj){
               if (obj.isGlobal){
                 if (localPacks || packs){
@@ -64,11 +63,11 @@ let packs
                 obj.ID = packID
                 set(ref(database, `packs/${packID}`), obj)
               } else {
-                localPacks = JSON.parse(localStorage.getItem('localPacks')) 
+                localPacks = localStorage.getItem('localPacks') ? JSON.parse(localStorage.getItem('localPacks')) : null
                     if (localPacks || packs){
                       do {
                         packID = Number(String(Math.pow(10, 4) * Math.random()).replace('.', 0).slice(0, 12))
-                      } while (Object.keys(localPacks).findIndex(id => id == packID) !== -1 && Object.keys(packs).findIndex(id => id == packID) !== -1)
+                      } while (localPacks ? Object.keys(localPacks).findIndex(id => id == packID) : -1 !== -1 && packs ? Object.keys(packs).findIndex(id => id == packID) : -1 !== -1)
                     } else {
                         packID = Number(String(Math.pow(10, 4) * Math.random()).replace('.', 0).slice(0, 12))
                     }
@@ -78,19 +77,49 @@ let packs
                     }
                     localStorage.setItem('localPacks', JSON.stringify(obj))
               }
+              if (obj.rounds){
+                  for (let curRound = 0; curRound < obj.rounds.length; curRound++){
+                    let files = Array.from(obj.rounds[curRound].mediaFiles).filter(element => element !== '')
+                    if (files.length > 0){
+                      for (let i = 0; i < Array.from(obj.rounds[curRound].mediaFiles).length; i++){
+                        if (Array.from(obj.rounds[curRound].mediaFiles)[i].type !== undefined){
+                          uploadBytes(sRef(storage, `packs/${packID}/${curRound}/${i}`), Array.from(obj.rounds[curRound].mediaFiles)[i]).then((snapshot) => {
+                          })
+                        }
+                      }
+                    }
+                  }
+              }
               let likedPacks = Array.isArray(JSON.parse(localStorage.getItem('likedPacks'))) ? JSON.parse(localStorage.getItem('likedPacks')) : []
               likedPacks.push(packID)
               localStorage.setItem('likedPacks', JSON.stringify(likedPacks))
+            },
+            getQnFile: function(round, qnIndex){
+              getDownloadURL(sRef(storage, `packs/${pickedGame.pickedPack.ID}/${round}/${qnIndex}`)).then((url) => {
+                getMetadata(sRef(storage, `packs/${pickedGame.pickedPack.ID}/${round}/${qnIndex}`))
+                .then((metadata) => {
+                  switch (metadata.contentType.slice(0, 5)) {
+                    case 'image':
+                      document.getElementById('mediaFile').insertAdjacentHTML('beforeend', `<img src="${url}" alt="file" class="fileMediaElement" importance="high" loading="eager">`)
+                      break;
+                    case 'video':
+                      document.getElementById('mediaFile').insertAdjacentHTML('beforeend', `<video class="fileMediaElement" width="100%" autoplay autobuffer preload="auto"><source src="${url}"></video>`)
+                      break;
+                    case 'audio':
+                      document.getElementById('mediaFile').insertAdjacentHTML('beforeend', `<audio width="100%" class="fileMediaElement" autoplay><source src="${url}"></audio>`)
+                      break;
+                  }
+                })
+              })
             },
             getPacksData: async function(){
               get(child(dbRef, 'packs/')).then((snapshot) => {
                 if (snapshot.exists()) {
                   packs = snapshot.val();
-                  // packs.shift()
-                  console.log(packs)
+                  this.firebaseLoaded();
                   return snapshot.val();
                 } else {
-                  console.log("No data available");
+                  this.firebaseLoaded();
                 }
               })
             },
@@ -101,23 +130,49 @@ let packs
                   if (snapshot.exists()) {
                     allUid = Object.keys(snapshot.val())
                   } else {
-                    console.log("No data available");
                   }
+                  do {
+                    uid = Number(String(Math.pow(10, 4) * Math.random()).replace('.', 0).slice(0, 12))
+                    userName = `User${uid.toString().substring(0,4)}`
+                  } while (allUid.findIndex(id => id == uid) !== -1)
+  
+                 set(ref(database, `users/${uid}`), {
+                  name: userName
+                 }).then(() => {localStorage.setItem('uid', uid); localStorage.setItem('userName', userName); this.firebaseLoaded()})
                 }).catch((error) => {
                   console.error(error);
                 });
-                do {
-                  uid = Number(String(Math.pow(10, 4) * Math.random()).replace('.', 0).slice(0, 12))
-                  userName = `User${uid.toString().substring(0,4)}`
-                } while (allUid.findIndex(id => id == uid) !== -1)
-
-               set(ref(database, `users/${uid}`), {
-                name: userName
-               }).then(() => {localStorage.setItem('uid', uid); localStorage.setItem('userName', userName)})
               } else {    
                 uid = localStorage.getItem('uid')
                 userName = localStorage.getItem('userName')
+                this.firebaseLoaded();
               }
+            },
+            getUserAvatar: function(){
+              getDownloadURL(sRef(storage, `avatars/${uid}`)).then((url) => {
+                  getMetadata(sRef(storage, `avatars/${uid}`))
+                  .then((metadata) => {
+                    if (metadata.contentType.slice(0, 5) == 'image'){
+                      if (document.getElementById('userMenuIcon')){
+                        if (document.getElementById('userMenuIcon')){
+                          document.getElementById('userMenuIcon').src = url
+                        }
+                        myIcon = url
+                      }
+                    }
+                    this.firebaseLoaded();
+                  })
+              }).catch((error) => {
+                switch (error.code) {
+                  case 'storage/object-not-found':
+                    myIcon = './img/defaultIcon.png'
+                    break
+                    
+                  }; this.firebaseLoaded()})
+            },
+            setUserAvatarL: function(file){
+              uploadBytes(sRef(storage, `avatars/${uid}`), file).then((snapshot) => {
+              })
             },
             setUserName: function(newUserName){
               userName = newUserName
@@ -181,7 +236,6 @@ let packs
                 ]
               }
               Game.data().pickedGame = pickedGame
-              console.log(pickedGame)
               set(ref(database, `rooms/${gameID}`), pickedGame).then(() => {
                 localStorage.setItem('currentGame', gameID);
                 players = []; 
@@ -196,9 +250,7 @@ let packs
                 if (snapshot.exists()) {
                    gameRooms = snapshot.val()
                    delete gameRooms.test
-                   console.log(gameRooms)
                 }
-                console.log(gameRooms)
                 if (gameRooms !== undefined){
                   for (let i = 0; i < Object.entries(gameRooms).length; i++) {
                     let activePlayers = []
@@ -212,12 +264,13 @@ let packs
                       }
                     }
                     if (activePlayers.length < 1){
-                      console.log('DELETE')
                       set(ref(db, `rooms/${Object.entries(gameRooms)[i][0]}`), {});
                     }
                   }
                 }
+                this.firebaseLoaded();
               }).catch((error) => {
+                this.firebaseLoaded();
                 console.error(error);
               });
             },
@@ -237,15 +290,12 @@ let packs
               get(child(dbRef, `rooms/${roomID}/`)).then((snapshot) => {
                 if (snapshot.exists()) {
                   pickedGame = snapshot.val()
-                  console.log(pickedGame)
                   players = []
                   players = snapshot.val().players
-                   console.log(players)
                 }
               }).catch((error) => {
                 console.error(error);
               }).then(() => {
-                console.log(players)
                 let index = players.findIndex(element => element.id == uid)
                 if (index == -1){
                   players.push({
@@ -253,7 +303,6 @@ let packs
                     name: userName, 
                     inGame: true
                   })
-                  console.log(players)
                   set(ref(database, `rooms/${roomID}/players`),
                     players
                   ).then(() => {             
@@ -280,18 +329,35 @@ let packs
                     onDisconnect(lastOnlineRef).set(serverTimestamp());
                   }
                 });
-              })
-            },
-            leaveGame: function(){
-              console.log(Object.entries(pickedGame.players).length)
-              for (let i = 0; i < Object.entries(pickedGame.players).length; i++){
-                if (Object.entries(pickedGame.players)[i][1].id == uid){
-                  set(ref(db, `rooms/${localStorage.getItem('currentGame')}/players/${i}/inGame`), false).then(() => {
-                    localStorage.setItem('currentGame', undefined)
-                    router.push('/joinGame')
+                if (uid == pickedGame.host.id){
+                  set(ref(db, `rooms/${roomID}/gameLine/paused`), false).then(() => {
+                   
                   })
                 }
-              }
+              })
+              
+            },
+            leaveGame: function(){
+              let activePlayers = pickedGame.players.filter(element => element.inGame == true)
+                if (pickedGame.gameLine.finished === true && activePlayers.length < 2){
+                  set(ref(db, `rooms/${localStorage.getItem('currentGame')}`), null).then(() => {
+                    if (uid == pickedGame.host.id){
+                        document.location.reload()
+                    } else {
+                      document.location.reload()
+                    }
+                    localStorage.setItem('currentGame', undefined)
+                  })
+                } else {
+                  if (uid == pickedGame.host.id){
+                    set(ref(db, `rooms/${localStorage.getItem('currentGame')}/gameLine/paused`), true).then(() => {
+                      document.location.reload()
+                    })
+                  } else {
+                    document.location.reload()
+                  }
+                  localStorage.setItem('currentGame', undefined)
+                }
             },
             getRandomPlayer: function(){
               let activePlayers = []
@@ -327,16 +393,12 @@ let packs
               set(ref(database, `rooms/${localStorage.getItem('currentGame')}/gameLine/wrongAnswer`), randAnswer)
             },
             updatePlayerPoints: function(){
-              console.log(pickedGame.players)
               let index = pickedGame.players.findIndex(element => element.id == pickedGame.gameLine.turn.id)
-              console.log(uid)
-              console.log(index)
               let pointsIndex = Math.abs(pickedGame.gameLine.pikedQuestion - Math.floor(pickedGame.gameLine.pikedQuestion / Array.from(document.getElementsByClassName('points')).length) * Array.from(document.getElementsByClassName('points')).length)
               let points = pickedGame.pickedPack.rounds[round].points[pointsIndex]
               if (!pickedGame.players[index].points){
                 pickedGame.players[index].points = 0
               }
-              console.log(pickedGame.players[index])
               let voitedTrue = Object.values(pickedGame.gameLine.voiting).filter(element => element == true)
               let voitedFalse = Object.values(pickedGame.gameLine.voiting).filter(element => element == false)
               let activePlayers = []
@@ -358,8 +420,6 @@ let packs
               } else if ((activePlayers.length-1) == Object.values(pickedGame.gameLine.voiting).length){
                 Game.data().nextTurn()
               }
-              console.log(this.pickedGame.players)
-              console.log(pickedGame.players)
               set(ref(database, `rooms/${localStorage.getItem('currentGame')}/players`), this.pickedGame.players)
             },
             informVoiting: function(right){
@@ -380,6 +440,11 @@ let packs
                 set(ref(database, `rooms/${localStorage.getItem('currentGame')}/gameLine/voiting/${activePlayers[i].id}`), right)
               }
             },
+            updatePointsByHost: function(currPlayer, points){
+              let activePlayers = pickedGame.players.filter(element => element.inGame == true)
+              let index = pickedGame.players.findIndex(element => element == activePlayers[currPlayer])
+              set(ref(database, `rooms/${localStorage.getItem('currentGame')}/players/${index}/points`), points)
+            },
             nextRound: function(){
               if (round < pickedGame.pickedPack.rounds.length-1){
                 round++
@@ -398,57 +463,67 @@ let packs
               set(ref(database, `rooms/${localStorage.getItem('currentGame')}/gameLine/paused/`), false)
             },
             setGameDataListeners: function(){
-              console.log(pickedGame.ID)
               onValue(ref(db, `rooms/${pickedGame.ID}/players`), (snapshot) => {
-                console.log(snapshot.val())
+                
                 if (snapshot.val() !== null){
-                  pickedGame.players = snapshot.val();
-                  console.log(pickedGame)
-                  Game.data().showPlayers()
+                  let activePlayers = pickedGame.players.filter(element => element.inGame == true)
+                  let fbActivePlayers = snapshot.val().filter(element => element.inGame == true)
+                  if (activePlayers.length == fbActivePlayers.length && activePlayers.length !== 1){
+                    pickedGame.players = snapshot.val();
+                    Game.data().updatePlayerPoints()
+                  } else {
+                    pickedGame.players = snapshot.val();
+                    let inactivePlayers = pickedGame.players.filter(element => element.inGame == false || element.inGame == undefined || element.inGame == null)
+                    if (inactivePlayers.findIndex(element => element.id == pickedGame.gameLine.turn.id) !== -1){
+                      this.nextTurn()
+                    }
+                    let activePlayers = pickedGame.players.filter(element => element.inGame == true)
+                    for (let i = 0; i < activePlayers.length; i++){
+                      getDownloadURL(sRef(storage, `avatars/${activePlayers[i].id}`))
+                      .then((url) => {
+                        document.getElementsByClassName('playerAvatars')[i].src = url
+                      }).catch((error) => {
+                        switch (error.code) {
+                          case 'storage/object-not-found':
+                            document.getElementsByClassName('playerAvatars')[i].src = './img/defaultIcon.png'
+                            break
+                          }})
+                      Game.data().showPlayers()
+                    }
+                  }
                 }
               });
               onValue(ref(db, `rooms/${pickedGame.ID}/gameLine/turn`), (snapshot) => {
-                console.log(snapshot.val())
                 if (snapshot.val() !== null){
                   pickedGame.gameLine.turn = snapshot.val();
                   document.getElementById('questionBlock').style.display = 'none'
                   document.getElementById('tableWithQuestions').style.display = 'grid'
                   if (pickedGame.gameLine.turn){
-                    console.log(pickedGame.gameLine.turn)
                     Game.data().onQuestionPick()
                   }
                 }
               });
               onValue(ref(db, `rooms/${pickedGame.ID}/gameLine/pikedQuestion`), (snapshot) => {
-                console.log(snapshot.val())
                 if (snapshot.val() !== null){
                   pickedGame.gameLine.pikedQuestion = snapshot.val();
-                  console.log(pickedGame)
                   if (pickedGame.gameLine.pikedQuestion){
-                    console.log(pickedGame.gameLine.pikedQuestion)
                     Game.data().onGetQuestion()
                   } else if (pickedGame.gameLine.pikedQuestion === 0){
-                    console.log(pickedGame.gameLine.pikedQuestion)
                     Game.data().onGetQuestion()
                   }
                 }
               });
               onValue(ref(db, `rooms/${pickedGame.ID}/gameLine/voiting`), (snapshot) => {
-                console.log(snapshot.val())
                 if (snapshot.val() !== null){
                   pickedGame.gameLine.voiting = snapshot.val();
-                  console.log(pickedGame)
                   if (pickedGame.gameLine.voiting){
                     this.updatePlayerPoints()
-                    console.log(pickedGame.gameLine.voiting)
                   }
                 }
               });
               onValue(ref(db, `rooms/${pickedGame.ID}/started`), (snapshot) => {
-                console.log(snapshot.val())
                 if (snapshot.val() !== null){
                   pickedGame.started = snapshot.val();
-                  console.log(pickedGame)
                   if (pickedGame.started){
                     turnPlayerIndex = 0
                     Game.data().showGameInfo()
@@ -456,21 +531,18 @@ let packs
                 }
               });
               onValue(ref(db, `rooms/${pickedGame.ID}/gameLine/answer/`), (snapshot) => {
-                console.log(snapshot.val())
                 if (snapshot.val() !== null){
                   pickedGame.gameLine.answer = snapshot.val();
                   Game.data().onAnswered()
                 }
               });
               onValue(ref(db, `rooms/${pickedGame.ID}/gameLine/round/`), (snapshot) => {
-                console.log(snapshot.val())
                 if (snapshot.val() !== null && snapshot.val() !== pickedGame.gameLine.round){
                   pickedGame.gameLine.round = snapshot.val();
                   Game.data().nextRound()
                 }
               });
               onValue(ref(db, `rooms/${pickedGame.ID}/gameLine/finished/`), (snapshot) => {
-                console.log(snapshot.val())
                 if (snapshot.val() !== null){
                   pickedGame.gameLine.finished = snapshot.val();
                   if (pickedGame.gameLine.finished){
@@ -502,7 +574,8 @@ let packs
             uid: uid,
             userName: userName,
             packs: packs,
-            round: round
+            round: round, 
+            myIcon: myIcon
           }
         }
       }

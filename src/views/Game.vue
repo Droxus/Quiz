@@ -12,6 +12,7 @@
         </div>
         <div id="questionBlock">
             <label id="questionLbl"></label>
+            <div id="mediaFile"></div>
             <div id="testTypeAnswer"><form></form></div>
             <label id="answerLbl"></label>
             <input id="answerInp" type="text">
@@ -24,6 +25,17 @@
     <div id="pauseWindow">
         <label>Game Paused</label>
         <button id="resumeGameBtn" @click="onResumeGame()">Resume</button>
+    </div>
+    <div id="playerChangePointsBlock" @click="closePointchangeWindow($event)">
+        <div id="playerChangePoints" @click="$event.stopPropagation()">
+            <button @click="onChangePointsInpBtns($event)">+</button>
+            <input id="changePointsInp" type="number">
+            <button @click="onChangePointsInpBtns($event)">-</button>
+        </div>
+    </div>
+    <div id="announceWinnerBlock" @click="onFinishGameLeave()">
+        <label>Winner is</label>
+        <label id="winerIsPlayer"></label>
     </div>
 </div>
 </template>
@@ -38,8 +50,12 @@ let timerOnAnswer
 let indexAnswer
 let intervalTimerAnswer
 let round = 0
+let currPlayerOnChangePoints
 function onLeaveBtn(){
-    console.log('aa')
+    clearTimeout(timerOnPickQn)
+    clearTimeout(timerOnAnswer)
+    clearInterval(intervalTimer)
+    clearInterval(intervalTimerAnswer)
     firebase.data().leaveGame()
 }
 function onStartGame(){
@@ -105,15 +121,32 @@ function onAnsweredBtn(){
                         if (firebase.data().pickedGame.pickedPack.rounds[round].wrongAnswers[indexAnswer].length > 0){
                             let rightAnswer = Array.from(document.getElementsByClassName('answersTest')).find(element => element.value == firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer])
                             rightAnswer.parentElement.style.color = 'green'
-                            console.log(rightAnswer)
                         } else {
                             document.getElementById('rightAnswerLbl').innerText = firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]
+                            if (document.getElementsByClassName('fileMediaElement')[0] !== undefined){
+                                if (document.getElementsByClassName('fileMediaElement')[0].tagName !== 'IMG'){
+                                    document.getElementsByClassName('fileMediaElement')[0].firstElementChild.remove()
+                                    document.getElementsByClassName('fileMediaElement')[0].remove()
+                                }
+                            }
                         }            
                     } else {
                             document.getElementById('rightAnswerLbl').innerText = firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]
+                            if (document.getElementsByClassName('fileMediaElement')[0] !== undefined){
+                                if (document.getElementsByClassName('fileMediaElement')[0].tagName !== 'IMG'){
+                                    document.getElementsByClassName('fileMediaElement')[0].firstElementChild.remove()
+                                document.getElementsByClassName('fileMediaElement')[0].remove()
+                                }
+                            }
                     }     
                 } else {
                     document.getElementById('rightAnswerLbl').innerText = firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]
+                    if (document.getElementsByClassName('fileMediaElement')[0] !== undefined){
+                        if (document.getElementsByClassName('fileMediaElement')[0].tagName !== 'IMG'){
+                            document.getElementsByClassName('fileMediaElement')[0].firstElementChild.remove()
+                        document.getElementsByClassName('fileMediaElement')[0].remove()
+                        }
+                    }
                 }
                 if (firebase.data().pickedGame.gameLine.turn.id !== firebase.data().uid){
                     document.getElementById('answerLbl').innerText = firebase.data().pickedGame.gameLine.answer.answer
@@ -186,16 +219,43 @@ export default {
                         document.getElementById('playersBlock').firstElementChild.remove()
                     }
                 }
-                console.log(this.pickedGame)
-                let activePlayers = this.players.filter(element => element.inGame == true)
-                console.log(activePlayers)
+                let activePlayers = firebase.data().pickedGame.players.filter(element => element.inGame == true)
                 for (let i = 0; i < activePlayers.length; i++){
                     document.getElementById('playersBlock').insertAdjacentHTML('beforeend', `
                         <div class="player">
-                        <img src="#" alt="Icon">
+                        <img class="playerAvatars" src="${activePlayers.icon ? activePlayers.icon : '#'}" alt="Icon">
                         <label class="playersNick">${activePlayers[i].name}</label>
                         <label class="playersPoints">${activePlayers[i].points ? activePlayers[i].points : 0}</label>
                     </div>`)
+                }
+                Array.from(document.getElementsByClassName('player')).forEach(element => element.addEventListener('click', this.onPlayer))
+            },
+            updatePlayerPoints: function(){
+                let activePlayers = this.players.filter(element => element.inGame == true)
+                for (let i = 0; i < activePlayers.length; i++){
+                    Array.from(document.getElementsByClassName('playersPoints'))[i].innerText = activePlayers[i].points ? activePlayers[i].points : 0
+                }
+            },
+            onPlayer: function(event){
+                if (firebase.data().pickedGame.host.id == firebase.data().uid){
+                    currPlayerOnChangePoints = Array.from(document.getElementsByClassName('player')).findIndex(element => element == event.currentTarget)
+                    document.getElementById('playerChangePointsBlock').style.display = 'grid'
+                    document.getElementById('changePointsInp').value = Number(event.currentTarget.getElementsByClassName('playersPoints')[0].innerText)
+                }
+            },  
+            closePointchangeWindow: function(event){
+                event.stopPropagation()
+                if (document.getElementById('changePointsInp').value){
+
+                }
+                document.getElementById('playerChangePointsBlock').style.display = 'none'
+                firebase.data().updatePointsByHost(currPlayerOnChangePoints, Number(document.getElementById('changePointsInp').value))
+            },
+            onChangePointsInpBtns: function(event){
+                if (event.currentTarget.innerText == '+'){
+                    document.getElementById('changePointsInp').value !== '' ? document.getElementById('changePointsInp').value = Number(document.getElementById('changePointsInp').value) + 100 : document.getElementById('changePointsInp').value = 100
+                } else{
+                    document.getElementById('changePointsInp').value !== '' ? document.getElementById('changePointsInp').value = Number(document.getElementById('changePointsInp').value) - 100 : document.getElementById('changePointsInp').value = -100
                 }
             },
             showHeader: function(){
@@ -307,13 +367,17 @@ export default {
                 if (firebase.data().pickedGame.gameLine.paused){
                     document.getElementById('pauseWindow').style.display = 'grid'
                     document.getElementById('resumeGameBtn').style.display = 'none'
-                    console.log(timerOnPickQn, timerOnAnswer, intervalTimer, intervalTimerAnswer)
                     clearTimeout(timerOnPickQn)
                     clearTimeout(timerOnAnswer)
                     clearInterval(intervalTimer)
                     clearInterval(intervalTimerAnswer)
                     if (firebase.data().pickedGame.host.id == firebase.data().uid){
                         document.getElementById('resumeGameBtn').style.display = 'block'
+                    }
+                    if (document.getElementsByClassName('fileMediaElement')[0] !== undefined){
+                        if (document.getElementsByClassName('fileMediaElement')[0].tagName !== 'IMG'){
+                            document.getElementsByClassName('fileMediaElement')[0].pause()
+                        }
                     }
                 } else {
                     document.getElementById('pauseWindow').style.display = 'none'
@@ -325,7 +389,6 @@ export default {
                             document.getElementById('timerForGame').innerText = timer
                         }, 1000)
                         timerOnPickQn = setTimeout(() => {
-                            console.log('Sheet')
                             this.pickRandomQuestion()
                             clearInterval(intervalTimer)
                         }, delay * 1000)
@@ -336,6 +399,11 @@ export default {
                             timer--
                             document.getElementById('timerForGame').innerText = timer
                         }, 1000)
+                    }
+                    if (document.getElementsByClassName('fileMediaElement')[0] !== undefined){
+                        if (document.getElementsByClassName('fileMediaElement')[0].tagName !== 'IMG'){
+                            document.getElementsByClassName('fileMediaElement')[0].play()
+                        }
                     }
                 }
             },
@@ -399,6 +467,13 @@ export default {
                     }
                 }
             },
+            onFinishGameLeave: function(){
+                clearTimeout(timerOnPickQn)
+                clearTimeout(timerOnAnswer)
+                clearInterval(intervalTimer)
+                clearInterval(intervalTimerAnswer)
+                firebase.data().leaveGame()
+            },
             onQuestionPick: function(){
                 document.getElementById('nowTurnPlayerName').innerText = firebase.data().pickedGame.gameLine.turn.name
                     clearInterval(intervalTimer)
@@ -411,7 +486,6 @@ export default {
                     document.getElementById('timerForGame').innerText = timer
                 }, 1000)
                 timerOnPickQn = setTimeout(() => {
-                    console.log('Sheet')
                     this.pickRandomQuestion()
                     clearInterval(intervalTimer)
                 }, firebase.data().pickedGame.timeOnPickQuestion * 1000)
@@ -433,11 +507,18 @@ export default {
                 }, 1000)
                 
                     indexAnswer = Array.from(document.getElementsByClassName('qustions')).indexOf(event.currentTarget)
-                    console.log(indexAnswer)
                     firebase.data().informPickedQuestion(indexAnswer)
                     document.getElementById('questionBlock').style.display = 'grid'
                     document.getElementById('tableWithQuestions').style.display = 'none'
                     document.getElementById('questionLbl').innerText = firebase.data().pickedGame.pickedPack.rounds[round].questions[indexAnswer]
+                    while (document.getElementById('mediaFile').firstElementChild){
+                        document.getElementById('mediaFile').firstElementChild.remove()
+                    }
+                    if (firebase.data().pickedGame.pickedPack.rounds[round].mediaFiles !== undefined){
+                        if (firebase.data().pickedGame.pickedPack.rounds[round].mediaFiles[indexAnswer] !== ''){
+                            firebase.data().getQnFile(round, indexAnswer)
+                        }
+                    }
                     document.getElementById('testTypeAnswer').style.display = 'none'
                     wrongAnswersAddWithRand()
                     document.getElementById('questionBlock').insertAdjacentHTML('beforeend', `<button id="onAnsweredBtn">Answered</button>`)
@@ -471,13 +552,20 @@ export default {
                     document.getElementById('answerLbl').innerText = ''
                     indexAnswer = firebase.data().pickedGame.gameLine.pikedQuestion
                     document.getElementById('questionLbl').innerText = firebase.data().pickedGame.pickedPack.rounds[round].questions[indexAnswer]
+                    while (document.getElementById('mediaFile').firstElementChild){
+                        document.getElementById('mediaFile').firstElementChild.remove()
+                    }
+                    if (firebase.data().pickedGame.pickedPack.rounds[round].mediaFiles !== undefined){
+                        if (firebase.data().pickedGame.pickedPack.rounds[round].mediaFiles[indexAnswer] !== ''){
+                            firebase.data().getQnFile(round, indexAnswer)
+                        }
+                    }
                     document.getElementById('testTypeAnswer').style.display = 'none'
                     while (document.getElementById('onAnsweredBtn')){
                         document.getElementById('onAnsweredBtn').remove()
                     }
                     document.getElementById('answerInp').style.display = 'none'
                     timerOnAnswer = setTimeout(onAnsweredBtn, firebase.data().pickedGame.timeOnGiveAnswer * 1000)
-                    console.log(indexAnswer)
                     Array.from(document.getElementsByClassName('qustions'))[indexAnswer].removeEventListener('click', this.onQuestion)
                     if (Array.from(document.getElementsByClassName('qustions'))[indexAnswer].getElementsByClassName('questionMark')[0] !== undefined){
                         Array.from(document.getElementsByClassName('qustions'))[indexAnswer].getElementsByClassName('questionMark')[0].remove()
@@ -494,7 +582,6 @@ export default {
                 }
             },
             pickRandomQuestion: function(){
-                console.log('Question')
                 if (Array.from(document.getElementsByClassName('questionMark')).length > 0){
                     indexAnswer = Math.round(Math.random() * (Array.from(document.getElementsByClassName('questionMark')).length - 1))
                 if (firebase.data().uid == firebase.data().pickedGame.gameLine.turn.id){
@@ -506,18 +593,22 @@ export default {
                     clearTimeout(timerOnAnswer)
                     clearInterval(intervalTimer)
                     timer = firebase.data().pickedGame.timeOnGiveAnswer
-                    console.log(timer)
                     intervalTimerAnswer = setInterval(() => {
                     timer--
                     document.getElementById('timerForGame').innerText = timer
                     }, 1000)
                         firebase.data().informPickedQuestion(indexAnswer)
-                        console.log(indexAnswer)
                         document.getElementById('questionBlock').style.display = 'grid'
                         document.getElementById('tableWithQuestions').style.display = 'none'
-                        console.log(firebase.data().pickedGame.pickedPack.rounds[round].questions)
-                        console.log(firebase.data().pickedGame.pickedPack.rounds[round].questions[indexAnswer])
                         document.getElementById('questionLbl').innerText = firebase.data().pickedGame.pickedPack.rounds[round].questions[indexAnswer]
+                        while (document.getElementById('mediaFile').firstElementChild){
+                            document.getElementById('mediaFile').firstElementChild.remove()
+                        }
+                        if (firebase.data().pickedGame.pickedPack.rounds[round].mediaFiles !== undefined){
+                            if (firebase.data().pickedGame.pickedPack.rounds[round].mediaFiles[indexAnswer] !== ''){
+                                firebase.data().getQnFile(round, indexAnswer)
+                            }
+                        }
                         document.getElementById('testTypeAnswer').style.display = 'none'
                         wrongAnswersAddWithRand()
                         document.getElementById('questionBlock').insertAdjacentHTML('beforeend', `<button id="onAnsweredBtn">Answered</button>`)
@@ -533,7 +624,6 @@ export default {
                             Array.from(document.getElementsByClassName('qustions'))[indexAnswer].getElementsByClassName('questionMark')[0].remove()
                         }
                         } else {
-                            console.log('Next Round')
                         }
                 }
 
@@ -575,7 +665,8 @@ export default {
                         winner = firebase.data().pickedGame.players[i+1].name
                     }
                 }
-                console.log('Winner is', winner)
+                document.getElementById('announceWinnerBlock').style.display = 'grid'
+                document.getElementById('winerIsPlayer').innerText = winner
             },
             onAnswered: function(){
                 clearTimeout(timerOnPickQn)
@@ -602,6 +693,12 @@ export default {
                                 }
                             } else {
                                 document.getElementById('rightAnswerLbl').innerText = firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]
+                                if (document.getElementsByClassName('fileMediaElement')[0] !== undefined){
+                                    if (document.getElementsByClassName('fileMediaElement')[0].tagName !== 'IMG'){
+                                        document.getElementsByClassName('fileMediaElement')[0].firstElementChild.remove()
+                                        document.getElementsByClassName('fileMediaElement')[0].remove()
+                                    }
+                                }
                             }    
                                 if (firebase.data().pickedGame.host.id == firebase.data().uid && firebase.data().pickedGame.pickedPack.rounds[round].wrongAnswers[indexAnswer].length > 0){
                                     setTimeout(() => {
@@ -612,10 +709,22 @@ export default {
                         } else {
                                     document.getElementById('answerLbl').innerText = firebase.data().pickedGame.gameLine.answer.answer
                                     document.getElementById('rightAnswerLbl').innerText = firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]
+                                    if (document.getElementsByClassName('fileMediaElement')[0] !== undefined){
+                                        if (document.getElementsByClassName('fileMediaElement')[0].tagName !== 'IMG'){
+                                            document.getElementsByClassName('fileMediaElement')[0].firstElementChild.remove()
+                                            document.getElementsByClassName('fileMediaElement')[0].remove()
+                                        }
+                                    }
                         }
                     } else {
                         document.getElementById('answerLbl').innerText = firebase.data().pickedGame.gameLine.answer.answer
                         document.getElementById('rightAnswerLbl').innerText = firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]
+                        if (document.getElementsByClassName('fileMediaElement')[0] !== undefined){
+                            if (document.getElementsByClassName('fileMediaElement')[0].tagName !== 'IMG'){
+                                document.getElementsByClassName('fileMediaElement')[0].firstElementChild.remove()
+                                document.getElementsByClassName('fileMediaElement')[0].remove()
+                            }
+                        }
                     }
                     let isWrongAnswersArrZero
                     if (firebase.data().pickedGame.pickedPack.rounds[round].wrongAnswers){
@@ -627,7 +736,6 @@ export default {
                     } else {
                          isWrongAnswersArrZero = true
                     }
-                        console.log(isWrongAnswersArrZero)
                     if ((firebase.data().pickedGame.isHost == "Host" && firebase.data().pickedGame.host.id == firebase.data().uid && isWrongAnswersArrZero) || 
                     (firebase.data().pickedGame.isHost == "NoHost" && firebase.data().pickedGame.gameLine.turn.id !== firebase.data().uid && isWrongAnswersArrZero)){
                         if (document.getElementsByClassName('markAnswerBtns').length < 1){
@@ -646,6 +754,39 @@ export default {
 </script>
 
 <style>
+#announceWinnerBlock{
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: pink;
+    color: black;
+    font-size: weight;
+    width: 100vw;
+    height: 100vh;
+}
+#playerChangePointsBlock{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    backdrop-filter: blur(4px) brightness(60%);
+    z-index: 10;
+    display: none;
+}
+#playerChangePoints{
+    height: 20vh;
+    width: 40vw;
+    position: absolute;
+    display: grid;
+    grid-template-rows: 100%;
+    grid-template-columns: 20% 60% 20%;
+    top: 50%;
+    left: 50%;
+    z-index: 11;
+    transform: translate(-50%, -50%);
+}
 .questionMark{
     height: 50%;
     pointer-events: none;
@@ -737,6 +878,9 @@ export default {
     height: 100vh;
     backdrop-filter: blur(4px) brightness(60%);
     z-index: 9999;
+}
+.playerAvatars{
+    width: 100%;
 }
 @media screen and (max-device-width: 1024px) {
   #tableWithQuestions > * {

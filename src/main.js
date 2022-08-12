@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
-
+import firebase from './firebase.js'
 import './assets/main.css'
 
 const app = createApp(App)
@@ -13,4 +13,22 @@ app.mount('#app')
 Array.prototype.findLastIndex = function(callBack){
     let arr = this.slice()
     return arr.length - arr.reverse().findIndex(callBack)
+}
+document.getElementById('app').style.display = 'none'
+firebase.data().authFirebase()
+firebase.data().getPacksData()
+firebase.data().getGameRooms()
+firebase.data().getUserAvatar()
+
+export default {
+    data(){
+        return {
+        closeLoader: function(){
+            setTimeout(() => {
+            document.getElementById('app').style.display = 'block'
+            document.getElementById('loader').style.display = 'none'
+            }, 2000)
+        },
+        }
+    }
 }

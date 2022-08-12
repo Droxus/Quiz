@@ -299,3 +299,16 @@ input:checked + .slider:before {
   min-width: 40vw;
   min-height: 60vh;
 }
+#loader{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  backdrop-filter: blur(5px);
+  z-index: 9999999;
+  pointer-events: none;
+  display: block;
+  background: black;
+}

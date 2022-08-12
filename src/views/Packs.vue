@@ -32,23 +32,22 @@ export default {
                     case 'packsBlock':
                                     document.getElementById('packQuestionForm').style.display = 'block'
                                     document.getElementById('findPack').style.display = 'none'
-                                    console.log(event.currentTarget)
                                     document.getElementById('packNameAtQuestionForm').textContent = `${event.currentTarget.getElementsByClassName('packName')[0].textContent}`
-                                    console.log(firebase.data().packs)
-                                    for (let i = 0; i < firebase.data().packs[event.currentTarget.getElementsByClassName('packName')[0].textContent].rounds.length; i++){
+                                    for (let i = 0; i < firebase.data().packs[event.currentTarget.getAttribute('roomid')].rounds.length; i++){
                                     Array.from(document.getElementById('packQuestionForm').getElementsByTagName('main'))[0].insertAdjacentHTML('beforeend', `
                                         <h1>Round ${i+1}</h1>
                                     `)
-                                    if (firebase.data().packs[event.currentTarget.getElementsByClassName('packName')[0].textContent].rounds[i].categories == undefined){
-                                        firebase.data().packs[event.currentTarget.getElementsByClassName('packName')[0].textContent].rounds[i].categories = ["", "", "", "", "", "", ""]
+                                    if (firebase.data().packs[event.currentTarget.getAttribute('roomid')].rounds[i].categories == undefined){
+                                        firebase.data().packs[event.currentTarget.getAttribute('roomid')].rounds[i].categories = ["", "", "", "", "", "", ""]
                                     }
-                                    for (let j = 0; j < firebase.data().packs[event.currentTarget.getElementsByClassName('packName')[0].textContent].rounds[i].categories.length; j++) {
+                                    for (let j = 0; j < firebase.data().packs[event.currentTarget.getAttribute('roomid')].rounds[i].categories.length; j++) {
                                         document.getElementById('packQuestionForm').getElementsByTagName('main')[0].insertAdjacentHTML('beforeend', `
-                                        <h2>${firebase.data().packs[event.currentTarget.getElementsByClassName('packName')[0].textContent].rounds[i].categories[j]}</h2>
+                                        <h2>${firebase.data().packs[event.currentTarget.getAttribute('roomid')].rounds[i].categories[j]}</h2>
                                     `)
-                                    for (let k = (5 * j); k < (j+1) * (firebase.data().packs[event.currentTarget.getElementsByClassName('packName')[0].textContent].rounds[i].questions.length / 7) - 1; k++) {
+                                    for (let k = (5 * j); k < (j+1) * (firebase.data().packs[event.currentTarget.getAttribute('roomid')].rounds[i].questions.length / 7) - 1; k++) {
                                         document.getElementById('packQuestionForm').getElementsByTagName('main')[0].insertAdjacentHTML('beforeend', `
-                                        <h3>${firebase.data().packs[event.currentTarget.getElementsByClassName('packName')[0].textContent].rounds[i].questions[k]}</h3>
+                                        <h3>${firebase.data().packs[event.currentTarget.getAttribute('roomid')].rounds[i].questions[k]}</h3>
+                                        <button class="closeAnser">${firebase.data().packs[event.currentTarget.getAttribute('roomid')].rounds[i].answers[k]}</button>
                                     `)
                                     }
                                     }
@@ -85,7 +84,7 @@ export default {
                     event.target.classList.remove('liked')
                 }
             },
-            likedPack: JSON.parse(localStorage.getItem('likedPacks')).find(element => element == this.roomID) ? true : false,
+            likedPack: localStorage.getItem('likedPacks') ? JSON.parse(localStorage.getItem('likedPacks')).find(element => element == this.roomID) ? true : false : null,
             pickedPack: pickedPack,
         }
     }

@@ -117,8 +117,9 @@ export default {
     },
     data() {
         return {
-            packs: Object.assign(JSON.parse(localStorage.getItem('localPacks')), firebase.data().packs ? Object.keys(firebase.data().packs)
-            .filter(element => JSON.parse(localStorage.getItem('likedPacks')).includes(element)).reduce((obj, key) => {obj[key] = firebase.data().packs[key]; return obj}, {}) : {}, 
+            loaclObj: localStorage.getItem('localPacks') ? JSON.parse(localStorage.getItem('localPacks')) : {},
+            packs: Object.assign(localStorage.getItem('localPacks') ? JSON.parse(localStorage.getItem('localPacks')) : {}, firebase.data().packs ? Object.keys(firebase.data().packs)
+            .filter(element => localStorage.getItem('localPacks') ? Array.from(JSON.parse(localStorage.getItem('localPacks'))).includes(element) : false).reduce((obj, key) => {obj[key] = firebase.data().packs[key]; return obj}, {}) : {}, 
             firebase.data().packs ? firebase.data().packs: {}),
             closePickPack: function(){
                 document.getElementById('lobbyGame').style.display = 'none'
@@ -153,6 +154,6 @@ export default {
                 firebase.data().createGame(gameName, answerType, toJoin, pickedPack, isHost, onWrongAnswer, timeOnPickQuestion, timeOnGiveAnswer)
             }
         }
-    }
+    },
 }
 </script>
