@@ -59,7 +59,7 @@ export default {
     },
     data() {
         return {
-            packs: Object.assign(Object.keys(firebase.data().packs).filter(element => JSON.parse(localStorage.getItem('likedPacks')).includes(element)).reduce((obj, key) => {obj[key] = firebase.data().packs[key]; return obj}, {}), firebase.data().packs),
+            packs: Object.assign(Object.keys(firebase.data().packs).filter(element => localStorage.getItem('likedPacks') ? JSON.parse(localStorage.getItem('likedPacks')).includes(element) : false).reduce((obj, key) => {obj[key] = firebase.data().packs[key]; return obj}, {}), firebase.data().packs),
             closePackForm: function(){
                 document.getElementById('packQuestionForm').style.display = 'none'
                 while (document.getElementById('packQuestionForm').getElementsByTagName('main')[0].firstElementChild){

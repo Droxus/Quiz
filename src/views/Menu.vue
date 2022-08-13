@@ -53,7 +53,9 @@ import firebase from '../firebase.js'
             }
         },
         mounted(){
-            document.getElementById('userMenuIcon').src = firebase.data().myIcon
+            if (!document.getElementById('userMenuIcon').src){
+                document.getElementById('userMenuIcon').src = firebase.data().myIcon
+            }
         }
     }
 </script>

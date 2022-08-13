@@ -51,9 +51,7 @@ export default {
         return {
             gameRooms: firebase.data().gameRooms,
             onJoinByCodeBtn: function(){
-                if (Object.keys(firebase.data().gameRooms).findIndex(element => element == document.getElementById('codeToJoinGameInp').value) !== -1){
-                    firebase.data().joinGameRoom(document.getElementById('codeToJoinGameInp').value)
-                }
+                firebase.data().joinByCode()
             }
         }
     }

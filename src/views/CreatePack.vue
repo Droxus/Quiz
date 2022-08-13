@@ -283,9 +283,9 @@ export default {
                     currentInputPick.firstElementChild.remove()
                 }
                 if (document.getElementById('questionInputArea').value !== '' && document.getElementById('answerInputArea').value !== ''){
-                    currentInputPick.insertAdjacentHTML('beforeend', `<img class="questionMark" height="100%" style="pointer-events: none;" src="/img/questionMark.png"></img>`)
+                    currentInputPick.insertAdjacentHTML('beforeend', `<img class="questionMark" height="100%" style="pointer-events: none;" src="img/questionMark.png"></img>`)
                 } else {
-                    currentInputPick.insertAdjacentHTML('beforeend', `<img height="100%" style="pointer-events: none;" src="/img/minus.png"></img>`)
+                    currentInputPick.insertAdjacentHTML('beforeend', `<img height="100%" style="pointer-events: none;" src="img/minus.png"></img>`)
                 }
                 currentInputPick.setAttribute('question', document.getElementById('questionInputArea').value)
                 currentInputPick.setAttribute('answer', document.getElementById('answerInputArea').value)

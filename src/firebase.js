@@ -335,7 +335,17 @@ let firebaseLoaded = 0
                   })
                 }
               })
-              
+            },
+            joinByCode: function(){
+              get(child(dbRef, `rooms/`)).then((snapshot) => {
+                if (snapshot.exists()) {
+                  gameRooms = snapshot.val()
+                }
+              }).then(() => {
+                if (Object.keys(gameRooms).findIndex(element => element == document.getElementById('codeToJoinGameInp').value) !== -1){
+                  this.joinGameRoom(document.getElementById('codeToJoinGameInp').value)
+                }
+              })
             },
             leaveGame: function(){
               let activePlayers = pickedGame.players.filter(element => element.inGame == true)
