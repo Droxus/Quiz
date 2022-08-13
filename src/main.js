@@ -24,10 +24,11 @@ export default {
     data(){
         return {
         closeLoader: function(){
-            setTimeout(() => {
             document.getElementById('app').style.display = 'block'
-            document.getElementById('loader').style.display = 'none'
-            }, 2000)
+            document.getElementById('loader').classList.add('closeLoader')
+            document.getElementById('loader').addEventListener('animationend', function(){
+                document.getElementById('loader').style.display = 'none'
+            })
         },
         }
     }

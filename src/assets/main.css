@@ -6,19 +6,14 @@
   font-weight: normal;
 }
 body {
-  background: rgb(186 183 193);
+  background: #2b84b3;
+  overflow: hidden;
 }
 a,
-.green {
+.green:hover {
   text-decoration: none;
   color: hsla(160, 100%, 37%, 1);
   transition: 0.4s;
-}
-
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
 }
 /*                    Create Pack                   */
 #questionDone{
@@ -301,14 +296,28 @@ input:checked + .slider:before {
 }
 #loader{
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  top: 50vh;
+  left: 50vw;
+  transform: translate(-50%, -50%);
+  width: 200vw;
+  height: 200vh;
   overflow: hidden;
-  backdrop-filter: blur(5px);
   z-index: 9999999;
   pointer-events: none;
   display: block;
-  background: black;
+  background: transparent;
+  border: 100vw solid #2b84b3;
+  border-radius: 50%;
+  overflow: hidden;
+}
+.closeLoader{
+  animation: 2s linear 0s running closeLoader;
+}
+@keyframes closeLoader {
+  from {
+    border: 100vw solid #2b84b3;
+  }
+  to {
+    border: 0px solid #2b84b3;
+  }
 }
