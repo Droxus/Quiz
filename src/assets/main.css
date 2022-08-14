@@ -8,6 +8,15 @@
 body {
   background: #2b84b3;
   overflow: hidden;
+  font-family: 'Jua', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  color: white;
+  font-size: 1em;
+  line-height: 25px;
+}
+button{
+  cursor: pointer;
 }
 a,
 .green:hover {
@@ -158,6 +167,14 @@ a,
   min-width: 40vw;
   min-height: 60vh;
 }
+.pageName{
+  margin-left: -20%;
+  font-size: 1.5em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
 @media screen and (max-device-width: 1024px) {
   .tabelQuestionCreate > * {
       font-size: 12px;
@@ -170,6 +187,20 @@ a,
 }
 #clarifyQuite{
   min-width: 60vw;
+}
+.packCategoriesLbl{
+  font-size: 0.8em;
+}
+.packAuthor{
+  font-size: 1.5em;
+  line-height: 40px;
+}
+.packName{
+  font-size: 1.5em;
+  line-height: 40px;
+}
+.pageName{
+  font-size: 1.5em;
 }
 }
 @media screen and (min-device-width: 1024px) {
@@ -184,6 +215,20 @@ a,
 }
 #clarifyQuite{
   min-width: 40vw;
+}
+.packCategoriesLbl{
+  font-size: 1.2em;
+}
+.packAuthor{
+  font-size: 2em;
+  line-height: 40px;
+}
+.packName{
+  font-size: 2em;
+  line-height: 40px;
+}
+.pageName{
+  font-size: 2.5em;
 }
 }
 /*        slider         */
@@ -240,12 +285,6 @@ input:checked + .slider:before {
   grid-area: packCategories;
   display: grid;
   grid-template-columns: 10% 80% 10%;
-}
-.packStar{
-  grid-area: packStar;
-  align-self: center;
-  justify-self: start;
-  margin-left: 10%;
 }
 .packName{
   grid-area: packName;
@@ -320,4 +359,8 @@ input:checked + .slider:before {
   to {
     border: 0px solid #2b84b3;
   }
+}
+.backBtn{
+  height: 100%;
+  z-index: 2;
 }

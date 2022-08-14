@@ -2,8 +2,27 @@
 
 <template>
 <div id="createGame">
-    <h1>Create Game</h1>
-    <router-link :to="'/'">Back</router-link>
+    <div id="createGameHeader">
+        <div id="backAndPageNameCG">
+            <button id="routerLinkCG" @click="onRouterLinkCG()">
+            <svg class="backBtn" width="50" height="127" viewBox="0 0 151 127" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16.3 65.6964L4 59.1071L16.3 53.3964L127 2L26.3636 59.9058L127 125L16.3 65.6964Z" fill="#145367"/>
+                <path d="M16.3 65.6964L4 59.1071L16.3 53.3964M16.3 65.6964L127 125L16.3 53.3964M16.3 65.6964L127 2L16.3 53.3964" stroke="#145367" stroke-width="3"/>
+                <path d="M78.1236 65.4737L70.1832 61.3004L78.0611 57.5668L148.962 23.9644L84.5634 61.7001L149.587 103.033L78.1236 65.4737Z" fill="#145367"/>
+                <path d="M78.1236 65.4737L70.1832 61.3004L78.0611 57.5668M78.1236 65.4737L149.587 103.033L78.0611 57.5668M78.1236 65.4737L148.962 23.9644L78.0611 57.5668" stroke="#145367" stroke-width="3"/>
+                </svg>
+            </button>
+            <button @click="onBackToPackPick()" id="backToPackPick">
+                <svg class="backBtn" width="50" height="127" viewBox="0 0 151 127" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16.3 65.6964L4 59.1071L16.3 53.3964L127 2L26.3636 59.9058L127 125L16.3 65.6964Z" fill="#145367"/>
+                <path d="M16.3 65.6964L4 59.1071L16.3 53.3964M16.3 65.6964L127 125L16.3 53.3964M16.3 65.6964L127 2L16.3 53.3964" stroke="#145367" stroke-width="3"/>
+                <path d="M78.1236 65.4737L70.1832 61.3004L78.0611 57.5668L148.962 23.9644L84.5634 61.7001L149.587 103.033L78.1236 65.4737Z" fill="#145367"/>
+                <path d="M78.1236 65.4737L70.1832 61.3004L78.0611 57.5668M78.1236 65.4737L149.587 103.033L78.0611 57.5668M78.1236 65.4737L148.962 23.9644L78.0611 57.5668" stroke="#145367" stroke-width="3"/>
+                </svg>
+            </button>
+            <label class="pageName">Create Game</label>
+        </div>
+    </div>
     <div id="pickPackBlock">
             <Packs 
             v-for="pack in packs"
@@ -14,9 +33,7 @@
             />
     </div>
     <div id="lobbyGame">
-        <button @click="closePickPack()">Back</button>
         <div>
-    <!-- <label>text / voice; code / opened; gameName; </label> -->
     <div>
         <label>Text</label>
         <label class="switch">
@@ -68,8 +85,36 @@
 </template>
 
 <style>
+#createGame{
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: 15% 85%;
+    width: 100vw;
+    height: 100vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    background: #76C5EF;
+    background: radial-gradient(#8ac9eb, #2b84b3);
+}
+#createGameHeader{
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: 30% 70%;
+}
+#backAndPageNameCG{
+    display: grid;
+    grid-template-rows: 100%;
+    grid-template-columns: 20% 80%;
+}
 #inputNameGame{
 
+}
+#backToPackPick{
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    width: 5%;
 }
 #startGame{
     width: 100vw;
@@ -91,6 +136,7 @@
     display: grid;
     grid-template-columns: 100%;
     grid-auto-rows: 12vh;
+    grid-gap: 2vh;
 }
 .packAtPickBlock{
     border: 1px solid black;
@@ -102,14 +148,19 @@
     grid-template-areas: "packStar packName packAuthor"
     "packStar packCategories packCategories";
 }
-
 #lobbyGame{
     display: none;
+}
+#routerLinkCG{
+    border: none;
+    background: none;
+    width: 0;
 }
 </style>
 
 <script>
 import firebase from '../firebase.js'
+import router from '../router';
 import Packs from './Packs.vue'
 export default {
     components: {
@@ -123,7 +174,7 @@ export default {
             firebase.data().packs ? firebase.data().packs: {}),
             closePickPack: function(){
                 document.getElementById('lobbyGame').style.display = 'none'
-                document.getElementById('pickPackBlock').style.display = 'block'
+                document.getElementById('pickPackBlock').style.display = 'grid'
                 if (document.getElementById('lobbyGame').getElementsByClassName('pack')[0] !== undefined) {
                     document.getElementById('lobbyGame').getElementsByClassName('pack')[0].remove()
                 } 
@@ -152,6 +203,14 @@ export default {
                     gameName = 'New Game'
                 }
                 firebase.data().createGame(gameName, answerType, toJoin, pickedPack, isHost, onWrongAnswer, timeOnPickQuestion, timeOnGiveAnswer)
+            },
+            onBackToPackPick: function(){
+                document.getElementById('backToPackPick').style.display = 'none'
+                document.getElementById('routerLinkCG').style.display = 'block'
+                this.closePickPack()
+            },
+            onRouterLinkCG: function(){
+                router.push('/')
             }
         }
     },

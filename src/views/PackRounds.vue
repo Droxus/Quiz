@@ -22,4 +22,8 @@ export default {
 .displayNone{
     display: none;
 }
+.packCategories::-webkit-scrollbar{
+    width: 0px;
+    display: none;
+}
 </style>

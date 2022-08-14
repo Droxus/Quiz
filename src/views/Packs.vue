@@ -28,6 +28,7 @@ export default {
             }
 },
             onPack: function(event){
+                console.log(event.currentTarget.parentElement.id)
                 switch (event.currentTarget.parentElement.id) {
                     case 'packsBlock':
                                     document.getElementById('packQuestionForm').style.display = 'block'
@@ -54,9 +55,13 @@ export default {
                                     }
                         break;
                     case 'pickPackBlock':
+                                document.getElementById('backToPackPick').style.display = 'block'
+                                document.getElementById('routerLinkCG').style.display = 'none'
                                 document.getElementById('lobbyGame').style.display = 'block'
                                 document.getElementById('pickPackBlock').style.display = 'none'
-                                document.getElementById('lobbyGame').insertAdjacentElement('afterbegin', event.currentTarget)
+                                let pickedPackElement = event.currentTarget
+                                let pickedPackElementClone = pickedPackElement.cloneNode(true);
+                                document.getElementById('lobbyGame').insertAdjacentElement('afterbegin',pickedPackElementClone)
                                 if (firebase.data().packs){
                                     if (firebase.data().packs[event.currentTarget.getAttribute('roomid')]){
                                         pickedPack = firebase.data().packs[event.currentTarget.getAttribute('roomid')]
@@ -67,7 +72,14 @@ export default {
                                         pickedPack = JSON.parse(localStorage.getItem('localPacks'))[event.currentTarget.getAttribute('roomid')]
                                     }
                                 }
-                            break;      
+                            break;    
+                    case 'lobbyGame':
+                        document.getElementById('lobbyGame').style.display = 'none'
+                        document.getElementById('pickPackBlock').style.display = 'block'
+                        if (document.getElementById('lobbyGame').getElementsByClassName('pack')[0] !== undefined) {
+                            document.getElementById('lobbyGame').getElementsByClassName('pack')[0].remove()
+                        } 
+                        break;
                 }
 
             },
@@ -84,6 +96,8 @@ export default {
                     event.target.classList.remove('liked')
                 }
             },
+            // star: this.likedPack ? '/img/star.png' : '/img/starActive.png',
+            star: this.likedPack ? 'liked' : 'notLiked',
             likedPack: localStorage.getItem('likedPacks') ? JSON.parse(localStorage.getItem('likedPacks')).find(element => element == this.roomID) ? true : false : null,
             pickedPack: pickedPack,
         }
@@ -93,7 +107,7 @@ export default {
 
 <template>
         <div class="pack" @click="onPack($event)" v-bind:roomID="roomID">
-            <img class="packStar" src="/img/star.png" alt="star" @click="onStar($event)" :class="{liked: likedPack}">
+            <div class="packStar" @click="onStar($event)" :class="{'liked': likedPack}"></div>
                 <label class="packName">{{name}}</label>
                 <label class="packAuthor">{{author}}</label>
                 <div class="packCategoriesBlock">
@@ -112,8 +126,10 @@ export default {
 </template>
     
 <style>
+#lala{
+    clip-path: polygon(100% 100%, 100% 100%, 100% 100%)
+}
 .pack{
-    border: 1px solid black;
     width: 100vw;
     height: 12vh;
     display: grid;
@@ -121,9 +137,43 @@ export default {
     grid-template-rows: 30% 70%;
     grid-template-areas: "packStar packName packAuthor"
     "packStar packCategories packCategories";
+    border: none;
+}
+.pack:nth-child(odd){
+    background: #145367;
+}
+.pack:nth-child(even){
+    background: #2185A6;
+}
+.packStar{
+    background: url(/img/star.png)
 }
 .liked{
-    background: gold;
+    background: url(/img/starActive.png);
+}
+.packStar{
+    grid-area: packStar;
+    align-self: center;
+    justify-self: start;
+    width: 45px;
+    height: 45px;
+    margin-left: 10%;
+}
+.nextRound{
+    background: none;
+    color: white;
+    border: none;
+    font-size: 24px;
+    font-weight: bold;
+    font-family: unset;
+}
+.prevRound{
+    background: none;
+    color: white;
+    border: none;
+    font-size: 24px;
+    font-weight: bold;
+    font-family: unset;
 }
 </style>
 

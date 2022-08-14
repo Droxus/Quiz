@@ -2,11 +2,22 @@
 
 <template>
 <div id="findPack">
-    <header>
-        <h1>Find Pack</h1>
-        <router-link :to="'/'">Back</router-link>
-    </header>
-    <main>
+    <div id="findPackHeader">
+        <div id="backAndPageName">
+            <router-link :to="'/'">
+            <svg class="backBtn" width="70" height="127" viewBox="0 0 151 127" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16.3 65.6964L4 59.1071L16.3 53.3964L127 2L26.3636 59.9058L127 125L16.3 65.6964Z" fill="#145367"/>
+            <path d="M16.3 65.6964L4 59.1071L16.3 53.3964M16.3 65.6964L127 125L16.3 53.3964M16.3 65.6964L127 2L16.3 53.3964" stroke="#145367" stroke-width="3"/>
+            <path d="M78.1236 65.4737L70.1832 61.3004L78.0611 57.5668L148.962 23.9644L84.5634 61.7001L149.587 103.033L78.1236 65.4737Z" fill="#145367"/>
+            <path d="M78.1236 65.4737L70.1832 61.3004L78.0611 57.5668M78.1236 65.4737L149.587 103.033L78.0611 57.5668M78.1236 65.4737L148.962 23.9644L78.0611 57.5668" stroke="#145367" stroke-width="3"/>
+            </svg>
+            </router-link>
+            <label class="pageName">Find Pack</label>
+        </div>
+        <div>
+
+        </div>
+    </div>
         <div id="packsBlock">
             <Packs 
             v-for="pack in packs"
@@ -16,7 +27,6 @@
             :roomID="pack.ID"
             />
         </div>
-    </main> 
 
 </div>
     <div id="packQuestionForm">
@@ -31,15 +41,38 @@
     </div>
 </template>
 <style>
-body{
+#findPack{
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: 15% 85%;
+    width: 100vw;
+    height: 100vh;
+    overflow-y: scroll;
     overflow-x: hidden;
+    background: #76C5EF;
+    background: radial-gradient(#8ac9eb, #2b84b3);
+}
+#findPack::-webkit-scrollbar{
+    width: 0px;
+    display: none;
+}
+#findPackHeader{
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: 30% 70%;
+}
+#backAndPageName{
+    display: grid;
+    grid-template-rows: 100%;
+    grid-template-columns: 20% 80%;
 }
 #packsBlock{
-    width: 100vw;
+    width: 100%;
     height: 100%;
     display: grid;
     grid-template-columns: 100%;
     grid-auto-rows: 12vh;
+    grid-gap: 2vh;
 }
 #packQuestionForm{
     display: none;

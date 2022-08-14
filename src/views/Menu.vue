@@ -77,7 +77,7 @@
     width: 200px;
     border-radius: 25px;
     text-align: center;
-    background: #2185A6;
+    background: transparent;
     font-family: 'Jua', sans-serif;
     font-style: normal;
     font-weight: 400;
@@ -95,25 +95,25 @@
     margin: 2%;
 }
 #gameName > *:nth-child(odd){
-    animation: 1s linear 0s infinite alternate rotateOddName;
+    animation: 1.5s linear 0s infinite alternate rotateOddName;
 }
 #gameName > *:nth-child(even){
-    animation: 1s linear 0s infinite alternate rotateName;
+    animation: 1.5s linear 0s infinite alternate rotateName;
 }
 @keyframes rotateName{
     from {
-         transform: rotate(15deg);
+         transform: rotate(10deg);
     }
     to{
-        transform: rotate(-15deg);
+        transform: rotate(-10deg);
     }
 }
 @keyframes rotateOddName{
     from {
-        transform: rotate(-15deg);
+        transform: rotate(-10deg);
     }
     to{
-        transform: rotate(15deg);
+        transform: rotate(10deg);
     }
 }
 .menuNavBtns:hover{
