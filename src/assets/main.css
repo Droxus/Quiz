@@ -15,8 +15,31 @@ body {
   font-size: 1em;
   line-height: 25px;
 }
+body > * {
+  font-family: 'Jua', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  color: white;
+  font-size: 1em;
+  line-height: 25px;
+}
+input{
+  font-family: 'Jua', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  color: white;
+  font-size: 1em;
+  line-height: 25px;
+  outline: none;
+}
 button{
   cursor: pointer;
+  font-family: 'Jua', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  color: white;
+  font-size: 1em;
+  line-height: 25px;
 }
 a,
 .green:hover {
@@ -202,6 +225,17 @@ a,
 .pageName{
   font-size: 1.5em;
 }
+#startGame{
+  font-size: 1.5em;
+}
+#inputNameGame{
+  width: 50%;
+  height: 40px;
+}
+.timesSettingBlock > input{
+  width: 50%;
+  height: 40px;
+}
 }
 @media screen and (min-device-width: 1024px) {
   .tabelQuestionCreate > * {
@@ -229,6 +263,17 @@ a,
 }
 .pageName{
   font-size: 2.5em;
+}
+#startGame{
+  font-size: 2em;
+}
+.timesSettingBlock > input{
+  width: 50%;
+  height: 40px;
+}
+#inputNameGame{
+  width: 25%;
+  height: 60px;
 }
 }
 /*        slider         */

@@ -47,7 +47,7 @@
     border-radius: 50%;
     align-self: end;
     justify-self: center;
-    margin-bottom: -10%;
+    margin-bottom: -8%;
     z-index: 2;
     border: 4px solid #04455a;
 }
@@ -83,7 +83,6 @@
     font-weight: 400;
     color: #145367;
     font-size: 1.5em;
-    line-height: 25px;
     z-index: 1;
     outline: none;
 }

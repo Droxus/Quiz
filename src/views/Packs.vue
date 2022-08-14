@@ -28,7 +28,6 @@ export default {
             }
 },
             onPack: function(event){
-                console.log(event.currentTarget.parentElement.id)
                 switch (event.currentTarget.parentElement.id) {
                     case 'packsBlock':
                                     document.getElementById('packQuestionForm').style.display = 'block'
@@ -59,6 +58,8 @@ export default {
                                 document.getElementById('routerLinkCG').style.display = 'none'
                                 document.getElementById('lobbyGame').style.display = 'block'
                                 document.getElementById('pickPackBlock').style.display = 'none'
+                                document.getElementById('createGameHeader').style["grid-template-rows"] = '100%'
+                                document.getElementById('createGame').style["grid-template-rows"] = '4.9% 95.1%'
                                 let pickedPackElement = event.currentTarget
                                 let pickedPackElementClone = pickedPackElement.cloneNode(true);
                                 document.getElementById('lobbyGame').insertAdjacentElement('afterbegin',pickedPackElementClone)
