@@ -156,8 +156,8 @@ export default {
     grid-area: packStar;
     align-self: center;
     justify-self: start;
-    width: 45px;
-    height: 45px;
+    width: 61px;
+    height: 55px;
     margin-left: 10%;
 }
 .nextRound{

@@ -21,7 +21,7 @@ body {
       -ms-user-select: none; 
           user-select: none; 
 }
-body > * {
+body *{
   font-family: 'Jua', sans-serif;
   font-style: normal;
   font-weight: 400;
@@ -30,171 +30,22 @@ body > * {
   line-height: 25px;
 }
 input{
-  font-family: 'Jua', sans-serif;
-  font-style: normal;
-  font-weight: 400;
-  color: white;
-  font-size: 1em;
-  line-height: 25px;
   outline: none;
 }
 button{
   cursor: pointer;
-  font-family: 'Jua', sans-serif;
-  font-style: normal;
-  font-weight: 400;
-  color: white;
-  font-size: 1em;
-  line-height: 25px;
+}
+.pack{
+  cursor: pointer;
+}
+.pack *{
+  cursor: pointer;
 }
 a,
 .green:hover {
   text-decoration: none;
   color: hsla(160, 100%, 37%, 1);
   transition: 0.4s;
-}
-/*                    Create Pack                   */
-#questionDone{
-  background: transparent;
-  border: none;
-  border-top: 1px solid grey;
-}
-#fileUploadBlock{
-  width:100%;
-  height:100%;
-  display:flex;
-  place-items: center;
-  flex-wrap: wrap;
-}
-#fileDropInp{
-  height: 30%;
-  background: transparent;
-  border: none;
-}
-#questionInputArea{
-  resize: none;
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid grey;
-  outline: none;
-  width: 100%;
-  font-size: 24px;
-  color: white;
-  padding: 5%;
-}
-#questionInputArea::selection{
-  color: black;
-}
-#answerInputArea{
-  resize: none;
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid grey;
-  outline: none;
-  width: 100%;
-  font-size: 24px;
-  color: white;
-  padding: 5%;
-}
-.wrongAnswerInputArea{
-  resize: none;
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid grey;
-  outline: none;
-  width: 100%;
-  font-size: 24px;
-  color: white;
-  padding: 5%;
-}
-.wrongAnswerInputArea::placeholder{
-  font-size: 18px;
-}
-#answerInputArea::placeholder{
-  font-size: 18px;
-}
-#questionInputArea::selection{
-  color: black;
-}
-.category{
-  /* background: red !important; */
-  
-}
-.points{
-  
-}
-.invisible{
-  display: none;
-}
-#bgBlur{
-  z-index: 0;
-  display: none;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  backdrop-filter: blur(4px) brightness(0.7);
-}
-#bgBlurForSaveWindow{
-  z-index: 0;
-  display: none;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  backdrop-filter: blur(4px) brightness(0.7);
-}
-#bgBlurQuite{
-  z-index: 0;
-  display: none;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  backdrop-filter: blur(4px) brightness(0.7);
-}
-#createPacke{
-  width: 100vw;
-  height: 100vh;
-}
-.tabelQuestionCreate{
-  margin: 5vh 2vw;
-  width: 96vw;
-  height: 76vh;
-  display: grid;
-  grid-template-columns: repeat(6, 16vw);
-  grid-template-rows: repeat(8, 9.5vh);
-}
-
-.tabelQuestionCreate > * {
-  border: 1px solid black;
-  width: 100%;
-  height: 100%;
-  background: transparent;
-  font-size: 24px;
-  text-align: center;
-  color: rgb(70, 70, 70);
-  font-weight: bold;
-  font-family: Arial, Helvetica, sans-serif;
-  display: flex;
-  place-items: center;
-  place-content: center;
-}
-#makeQuestion{
-  grid-template-columns: 100%;
-  grid-template-rows: 30% 8.75% 8.75% 8.75% 8.75% 25% 10%;
-  z-index: 2;
-  display: none;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  background: rgb(95, 104, 104);
-  position: absolute;
-  min-width: 40vw;
-  min-height: 60vh;
 }
 .pageName{
   margin-left: -20%;
@@ -209,7 +60,7 @@ a,
       font-size: 12px;
   }
   #makeQuestion{
-      min-width: 60vw;
+      min-width: 80vw;
   }
   #savePackWindow{
     min-width: 60vw;
@@ -234,6 +85,9 @@ a,
 #startGame{
   font-size: 1.5em;
 }
+#saveBtn{
+  font-size: 1.5em;
+}
 #inputNameGame{
   width: 50%;
   height: 40px;
@@ -242,16 +96,19 @@ a,
   width: 50%;
   height: 40px;
 }
+.playersNick{
+  font-size: 0.9em;
+}
 }
 @media screen and (min-device-width: 1024px) {
   .tabelQuestionCreate > * {
       font-size: 24px;
   }
       #makeQuestion{
-      min-width: 40vw;
+      width: 40vw;
   }
   #savePackWindow{
-    min-width: 40vw;
+    min-width: 30vw;
 }
 #clarifyQuite{
   min-width: 40vw;
@@ -273,6 +130,9 @@ a,
 #startGame{
   font-size: 2em;
 }
+#saveBtn{
+  font-size: 2em;
+}
 .timesSettingBlock > input{
   width: 50%;
   height: 40px;
@@ -280,6 +140,9 @@ a,
 #inputNameGame{
   width: 25%;
   height: 60px;
+}
+.playersNick{
+  font-size: 1.5em;
 }
 }
 /*        slider         */
@@ -290,11 +153,12 @@ a,
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #ccc;
+  background-color: transparent;
   -webkit-transition: .4s;
   transition: .4s;
-  width: 60px;
-  height: 33px;
+  width: 70px;
+  height: 42px;
+  border: 5px solid #145367;
 }
 
 .slider:before {
@@ -304,13 +168,13 @@ a,
   width: 26px;
   left: 4px;
   bottom: 4px;
-  background-color: white;
+  background: #2185A6;
   -webkit-transition: .4s;
   transition: .4s;
 }
 
 input:checked + .slider {
-  background-color: #2196F3;
+  background: #E17BB3F3;
 }
 
 input:focus + .slider {
@@ -327,7 +191,13 @@ input:checked + .slider:before {
 .slider.round {
   border-radius: 34px;
 }
-
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+.switch input {display:none;}
 .slider.round:before {
   border-radius: 50%;
 }
@@ -360,29 +230,8 @@ input:checked + .slider:before {
 .roundOfCategories{
   text-align: center;
 }
-#savePackWindow{
-  grid-template-columns: 100%;
-  z-index: 2;
+.displayNone{
   display: none;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  background: rgb(95, 104, 104);
-  position: absolute;
-  min-width: 40vw;
-  min-height: 60vh;
-}
-#clarifyQuite{
-  grid-template-columns: 100%;
-  z-index: 2;
-  display: none;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  background: rgb(95, 104, 104);
-  position: absolute;
-  min-width: 40vw;
-  min-height: 60vh;
 }
 #loader{
   position: absolute;

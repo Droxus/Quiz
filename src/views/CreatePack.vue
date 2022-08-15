@@ -3,10 +3,16 @@
 <template>
 <div id="createPacke" v-on:load="createTable()">
     <!-- <h1>Create Pack</h1> -->
-<header>
-    <button @click="onBack()">Back</button>
-    <button @click="onSaveBtn()">Save</button>
-</header>
+<div class="headerCreateGame">
+    <button id="backBtn" @click="onBack()"> <svg class="backBtn" width="70" height="127" viewBox="0 0 151 127" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16.3 65.6964L4 59.1071L16.3 53.3964L127 2L26.3636 59.9058L127 125L16.3 65.6964Z" fill="#145367"/>
+            <path d="M16.3 65.6964L4 59.1071L16.3 53.3964M16.3 65.6964L127 125L16.3 53.3964M16.3 65.6964L127 2L16.3 53.3964" stroke="#145367" stroke-width="3"/>
+            <path d="M78.1236 65.4737L70.1832 61.3004L78.0611 57.5668L148.962 23.9644L84.5634 61.7001L149.587 103.033L78.1236 65.4737Z" fill="#145367"/>
+            <path d="M78.1236 65.4737L70.1832 61.3004L78.0611 57.5668M78.1236 65.4737L149.587 103.033L78.0611 57.5668M78.1236 65.4737L148.962 23.9644L78.0611 57.5668" stroke="#145367" stroke-width="3"/>
+            </svg>
+    </button>
+    <label class="pageName">Create Pack</label>
+</div>
 <main>
     <div class="tabelQuestionCreate">
         <input disabled="disabled" value="Category">
@@ -65,17 +71,22 @@
             <label id="roundNumber">Round 1</label>
             <button @click="nextRound()">></button>
         </div>
+        <button id="saveBtn" @click="onSaveBtn()">Save</button>
     </footer>
     <div id="makeQuestion">
-                    <textarea id="questionInputArea" rows="12" placeholder="write question here"></textarea>
+                    <img class="qnCreateIcons" src="/img/questionMark.png" alt="qnMark">
+                    <textarea id="questionInputArea" rows="1" placeholder="write question here"></textarea>
+                    <img class="qnCreateIcons" src="/img/ExclamationPoint.png" alt="exclamationPoint">
                     <textarea id="answerInputArea" rows="1" placeholder="write answer here"></textarea>
+                    <img class="qnCreateIcons" src="/img/cross.png" alt="cross">
                     <textarea class="wrongAnswerInputArea" rows="1" placeholder="write WRONG answer here"></textarea>
                     <textarea class="wrongAnswerInputArea" rows="1" placeholder="write WRONG answer here"></textarea>
                     <textarea class="wrongAnswerInputArea" rows="1" placeholder="write WRONG answer here"></textarea>
         <form method="post" enctype="multipart/form-data">
-            <div id="fileUploadBlock">
-                <label for="file">Choose file to upload</label>
-                <input type="file" id="fileDropInp" name="file" multiple @input="onFileLoad($event)">
+            <div @click="onFileChooseClick()" id="fileUploadBlock">
+                <label id="chooseFileLbl" for="file">Choose file to upload</label>
+                    <input type="file" id="fileDropInp" name="file" multiple @input="onFileLoad($event)">
+                    <img id="fileIcon" class="qnCreateIcons" src="/img/fileIcon.png" alt="fileIcon">
             </div>
         </form>
         <button id="questionDone" @click="onDoneQuestion()">Done</button>
@@ -90,7 +101,7 @@
         <label>Enter Pack Name</label>
         <input type="text" id="nameOfPack">
         <label>Access</label>
-        <div>
+        <div id="pickIsGlobalPackBlock">
             <label>Only for me</label>
             <label class="switch">
             <input type="checkbox" id="isGlobalPack">
@@ -98,12 +109,14 @@
             </label>
             <label>For All</label>
         </div>
-        <button @click="onSave()">Save</button>
+        <button id="savePackBtn" @click="onSave()">Save</button>
     </div>
     <div id="clarifyQuite">
         <label>You have unsaved data!</label>
-        <button @click="onSaveBtn()">Save</button>
-        <button @click="back()">Dont Save</button>
+        <div id="unsavedDataBtnsBlock">
+            <button @click="back()">Dont Save</button>
+            <button @click="onSaveBtn()">Save</button>
+        </div>
     </div>
     <div id="bgBlurQuite" @click="onBackCancel()">
 
@@ -111,6 +124,331 @@
 </div>
 </template>
 
+<style>
+.pageName{
+  margin-left: -20%;
+  font-size: 1.5em;
+  z-index: 1;
+  height: 5vh;
+}
+#createPacke{
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(#8ac9eb, #2b84b3);
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: 7% 76% 17%;
+}
+.tabelQuestionCreate{
+    place-self: center;
+    width: 96vw;
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    border: 4px solid #145367;
+    border-radius: 10px;
+}
+.tabelQuestionCreate > * {
+    border: 1px solid #145367;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    text-align: center;
+    color: rgb(70, 70, 70);
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+    display: flex;
+    place-items: center;
+    place-content: center;
+    border-radius: 5px;
+    font-family: 'Jua', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    color: white;
+    line-height: 25px;
+    outline: none;
+}
+#makeQuestion{
+  grid-template-columns: 100%;
+  grid-template-rows: repeat(8, 8%) 26% 10%;
+  z-index: 11;
+  display: none;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: #76c5ef;
+  border-radius: 25px;
+  position: absolute;
+  height: 80vh;
+}
+#makeQuestion > textarea::-webkit-scrollbar{
+    width: 0;
+    display: none;
+}
+#makeQuestion > textarea::placeholder{
+    color: #2185A6;
+    text-align: center;
+}
+main{
+    display: grid;
+}
+footer{
+    display: grid;
+    justify-items: center;
+}
+.headerCreateGame{
+    display: grid;
+    grid-template-rows: 100%;
+    grid-template-columns: 20% 80%;
+}
+#chooseFileLbl{
+    display: flex;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#saveBtn{
+    width: 100vw;
+    width: 100vw;
+    align-self: end;
+    height: 80%;
+    border: none;
+    border-top-left-radius: 10%;
+    border-top-right-radius: 10%;
+    background: #E17BB3;
+    color: #145367;
+}
+#backBtn{
+    background: transparent;
+    border: none;
+    width: 0;
+    height: 5vh;
+    padding: 0;
+}
+#questionDone{
+    background: #E17BB3;
+    border-radius: 25px;
+    border: none;
+    color: #145367;
+}
+.qnCreateIcons{
+    max-height: 100%;
+    place-self: center;
+}
+#fileUploadBlock{
+  width:100%;
+  height:100%;
+  display: grid;
+  place-self: center;
+  grid-template-columns: 100%;
+  grid-template-rows: 25% 75%;
+}
+#fileDropInp{
+  height: 100%;
+  background: transparent;
+  border: none;
+  display: none;
+}
+#questionInputArea{
+  resize: none;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #145367;
+  outline: none;
+  width: 100%;
+  font-size: 24px;
+  color: white;
+  padding: 5%;
+}
+#questionInputArea::selection{
+  color: black;
+}
+#answerInputArea{
+  resize: none;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #145367;
+  outline: none;
+  width: 100%;
+  font-size: 24px;
+  color: white;
+  padding: 5%;
+}
+.wrongAnswerInputArea{
+  resize: none;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #145367;
+  outline: none;
+  width: 100%;
+  font-size: 24px;
+  color: white;
+  padding: 5%;
+}
+.wrongAnswerInputArea::placeholder{
+  font-size: 18px;
+}
+#answerInputArea::placeholder{
+  font-size: 18px;
+}
+#questionInputArea::selection{
+  color: black;
+}
+.invisible{
+  display: none;
+}
+#bgBlur{
+  z-index: 10;
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  backdrop-filter: blur(4px) brightness(0.7);
+}
+#switchRoundBlock{
+    display: grid;
+    width: 200px;
+    grid-template-columns: 30% 40% 30%;
+    grid-template-rows: 100%;
+}
+#switchRoundBlock > *{
+    place-self: center;
+}
+#switchRoundBlock > button{
+    background: none;
+    color: white;
+    border: none;
+    font-size: 24px;
+    font-weight: bold;
+    font-family: unset;
+}
+#bgBlurForSaveWindow{
+  z-index: 10;
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  backdrop-filter: blur(4px) brightness(0.7);
+}
+#bgBlurQuite{
+  z-index: 0;
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  backdrop-filter: blur(4px) brightness(0.7);
+}
+.fileMediaElement{
+    max-width: 90%;
+    max-height: 90%;
+    place-self: center;
+}
+.minusIcon{
+    pointer-events: none;
+    max-width: 100%;
+    max-height: 100%;
+}
+.questionMark{
+    pointer-events: none;
+    max-width: 100%;
+    max-height: 100%;
+}
+#savePackWindow{
+    grid-template-columns: 100%;
+    grid-template-rows: 20% 20% 15% 15% 30%;
+    z-index: 11;
+    display: none;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: #76c5ef;
+    border-radius: 25px;
+    position: absolute;
+    height: 40vh;
+}
+#savePackWindow > *{
+    text-align: center;
+    align-self: center;
+}
+#savePackBtn{
+    background: #E17BB3;
+    border-radius: 25px;
+    border: none;
+    height: 60%;
+    align-self: end;
+    color: #145367;
+}
+#pickIsGlobalPackBlock{
+    display: grid;
+    grid-template-rows: 100%;
+    grid-template-columns: 30% 40% 30%;
+    width: 200px;
+    place-self: center;
+}
+#nameOfPack{
+    border: 5px solid #145367;
+    border-radius: 20px;
+    background: transparent;
+    text-align: center;
+    font-size: 1.5em;
+}
+#nameOfPack::placeholder{
+    font-family: 'Jua', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    color: white;
+    font-size: 1em;
+    line-height: 40px;
+}
+#clarifyQuite{
+    grid-template-columns: 100%;
+    grid-template-rows: 70% 30%;
+    z-index: 11;
+    display: none;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: #76c5ef;
+    border-radius: 25px;
+    position: absolute;
+    height: 30vh;
+}
+#unsavedDataBtnsBlock{
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+#clarifyQuite > label{
+    display: flex;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#unsavedDataBtnsBlock > button:nth-child(even){
+    background: #145367;
+    flex: 1;
+    border-bottom-right-radius: 25px;
+    border-top-right-radius: 25px;
+    border: none;
+}
+#unsavedDataBtnsBlock > button:nth-child(odd){
+    background: #2185A6;
+    flex: 1;
+    border-bottom-left-radius: 25px;
+    border-top-left-radius: 25px;
+    border: none;
+}
+#fileIcon{
+    max-height: 50%;
+}
+</style>
 
 <script>
 import firebase from '../firebase.js'
@@ -246,6 +584,7 @@ export default {
             onQN: function(event){
                 document.getElementById('makeQuestion').style.display = 'grid'
                 document.getElementById('bgBlur').style.display = 'block'
+                document.getElementById('fileIcon').style.display = 'block'
                 currentInputPick = event.target
                 if (currentInputPick.getAttribute('question') !== null){
                     document.getElementById('questionInputArea').value = currentInputPick.getAttribute('question')
@@ -283,9 +622,9 @@ export default {
                     currentInputPick.firstElementChild.remove()
                 }
                 if (document.getElementById('questionInputArea').value !== '' && document.getElementById('answerInputArea').value !== ''){
-                    currentInputPick.insertAdjacentHTML('beforeend', `<img class="questionMark" height="100%" style="pointer-events: none;" src="img/questionMark.png"></img>`)
+                    currentInputPick.insertAdjacentHTML('beforeend', `<img class="questionMark" src="/img/questionMark.png"></img>`)
                 } else {
-                    currentInputPick.insertAdjacentHTML('beforeend', `<img height="100%" style="pointer-events: none;" src="img/minus.png"></img>`)
+                    currentInputPick.insertAdjacentHTML('beforeend', `<img class="minusIcon" src="img/minus.png"></img>`)
                 }
                 currentInputPick.setAttribute('question', document.getElementById('questionInputArea').value)
                 currentInputPick.setAttribute('answer', document.getElementById('answerInputArea').value)
@@ -332,29 +671,40 @@ export default {
                 document.getElementById('nameOfPack').value = ''
             },
             onFileLoad: function(event){
-                switch (event.target.files[0].type.slice(0, 5)) {
-                    case 'image':
-                        event.target.parentElement.insertAdjacentHTML('beforeend', `<img width="100%" class="fileMediaElement" src="${window.URL.createObjectURL(event.target.files[0])}" alt="photo" id="thisPhoto"></img>`)
-                        break;
-                    case 'video':
-                        event.target.parentElement.insertAdjacentHTML('beforeend', `<video class="fileMediaElement" width="100%" controls><source src="${window.URL.createObjectURL(event.target.files[0])}"></video>`)
-                        break;
-                    case 'audio':
-                        event.target.parentElement.insertAdjacentHTML('beforeend', `<audio width="100%" class="fileMediaElement" controls><source src="${window.URL.createObjectURL(event.target.files[0])}"></audio>`)
-                        break;
+                if (event.target.files[0] !== undefined){
+                    if (document.getElementById('fileDropInp').parentElement.getElementsByClassName('fileMediaElement').length > 0){
+                        document.getElementById('fileDropInp').parentElement.getElementsByClassName('fileMediaElement')[0].remove()
+                    }
+
+                    
+                    switch (event.target.files[0].type.slice(0, 5)) {
+                        case 'image':
+                            event.target.parentElement.insertAdjacentHTML('beforeend', `<img class="fileMediaElement" src="${window.URL.createObjectURL(event.target.files[0])}" alt="photo" id="thisPhoto"></img>`)
+                            break;
+                        case 'video':
+                            event.target.parentElement.insertAdjacentHTML('beforeend', `<video class="fileMediaElement" controls><source src="${window.URL.createObjectURL(event.target.files[0])}"></video>`)
+                            break;
+                        case 'audio':
+                            event.target.parentElement.insertAdjacentHTML('beforeend', `<audio class="fileMediaElement" controls><source src="${window.URL.createObjectURL(event.target.files[0])}"></audio>`)
+                            break;
+                    }
+                    document.getElementById('fileIcon').style.display = 'none'
+                    if (mediaFiles.rounds == undefined){
+                        mediaFiles.rounds = []
+                        mediaFiles.rounds[round-1] = Array(35).fill('')
+                    }
+                    if ( mediaFiles.rounds[round-1] == undefined){
+                        mediaFiles.rounds[round-1] = []
+                        mediaFiles.rounds[round-1] = Array(35).fill('')
+                    }
+                    let index = Array.from(currentInputPick.parentElement.getElementsByClassName('questions')).findIndex(element => element == currentInputPick)
+                    if (index !== -1){
+                        mediaFiles.rounds[round-1][index] = event.target.files[0]
+                    }
                 }
-                if (mediaFiles.rounds == undefined){
-                    mediaFiles.rounds = []
-                    mediaFiles.rounds[round-1] = Array(35).fill('')
-                }
-                if ( mediaFiles.rounds[round-1] == undefined){
-                    mediaFiles.rounds[round-1] = []
-                    mediaFiles.rounds[round-1] = Array(35).fill('')
-                }
-                let index = Array.from(currentInputPick.parentElement.getElementsByClassName('questions')).findIndex(element => element == currentInputPick)
-                if (index !== -1){
-                    mediaFiles.rounds[round-1][index] = event.target.files[0]
-                }
+            },
+            onFileChooseClick: function(){
+                document.getElementById('fileDropInp').click()
             }
         }
     }

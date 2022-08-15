@@ -103,10 +103,10 @@ let firebaseLoaded = 0
                       document.getElementById('mediaFile').insertAdjacentHTML('beforeend', `<img src="${url}" alt="file" class="fileMediaElement" importance="high" loading="eager">`)
                       break;
                     case 'video':
-                      document.getElementById('mediaFile').insertAdjacentHTML('beforeend', `<video class="fileMediaElement" width="100%" autoplay autobuffer preload="auto"><source src="${url}"></video>`)
+                      document.getElementById('mediaFile').insertAdjacentHTML('beforeend', `<video class="fileMediaElement" autoplay autobuffer preload="auto"><source src="${url}"></video>`)
                       break;
                     case 'audio':
-                      document.getElementById('mediaFile').insertAdjacentHTML('beforeend', `<audio width="100%" class="fileMediaElement" autoplay><source src="${url}"></audio>`)
+                      document.getElementById('mediaFile').insertAdjacentHTML('beforeend', `<audio class="fileMediaElement" autoplay><source src="${url}"></audio>`)
                       break;
                   }
                 })

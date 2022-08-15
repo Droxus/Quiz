@@ -24,7 +24,7 @@
     </div>
     <div id="pauseWindow">
         <label>Game Paused</label>
-        <button id="resumeGameBtn" @click="onResumeGame()">Resume</button>
+        <button id="resumeGameBtn" @click="onResumeGame()"><img src="/img/play.png" alt="resume"></button>
     </div>
     <div id="playerChangePointsBlock" @click="closePointchangeWindow($event)">
         <div id="playerChangePoints" @click="$event.stopPropagation()">
@@ -154,8 +154,10 @@ function onAnsweredBtn(){
                 if ((firebase.data().pickedGame.isHost == "Host" && firebase.data().pickedGame.host.id == firebase.data().uid) || (firebase.data().pickedGame.isHost == "NoHost" && firebase.data().pickedGame.gameLine.turn.id !== firebase.data().uid)){
                     if (document.getElementsByClassName('markAnswerBtns').length < 1){
                         document.getElementById('questionBlock').insertAdjacentHTML('beforeend', `
+                        <div id="chooseRightOrWrongAnswer">
                         <button class="markAnswerBtns" id="wrongAnswerBtn">Wrong</button>
                         <button class="markAnswerBtns" id="rightAnswerBtn">Right</button>
+                        </div>
                         `)
                         Array.from(document.getElementsByClassName('markAnswerBtns')).forEach(element => element.addEventListener('click', onIsItRightAnswer))
                     }
@@ -263,10 +265,15 @@ export default {
                 document.getElementById('headerOfGame').firstElementChild.remove()
                 }
                 if (this.pickedGame.host.id == firebase.data().uid){
-                    document.getElementById('headerOfGame').insertAdjacentHTML('beforeend', `<button id="leaveBtn">Leave</button>`)    
+                    document.getElementById('headerOfGame').insertAdjacentHTML('beforeend', `<button id="leaveBtn"><svg class="backBtn" width="70" height="127" viewBox="0 0 151 127" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16.3 65.6964L4 59.1071L16.3 53.3964L127 2L26.3636 59.9058L127 125L16.3 65.6964Z" fill="#145367"/>
+                <path d="M16.3 65.6964L4 59.1071L16.3 53.3964M16.3 65.6964L127 125L16.3 53.3964M16.3 65.6964L127 2L16.3 53.3964" stroke="#145367" stroke-width="3"/>
+                <path d="M78.1236 65.4737L70.1832 61.3004L78.0611 57.5668L148.962 23.9644L84.5634 61.7001L149.587 103.033L78.1236 65.4737Z" fill="#145367"/>
+                <path d="M78.1236 65.4737L70.1832 61.3004L78.0611 57.5668M78.1236 65.4737L149.587 103.033L78.0611 57.5668M78.1236 65.4737L148.962 23.9644L78.0611 57.5668" stroke="#145367" stroke-width="3"/>
+                </svg></button>`)    
                     if (!this.pickedGame.started){
-                        document.getElementById('headerOfGame').insertAdjacentHTML('beforeend', `<button id="startGame">Start Game</button>`)
-                        document.getElementById('startGame').addEventListener('click', onStartGame)
+                        document.getElementById('headerOfGame').insertAdjacentHTML('beforeend', `<button id="startingGame">Start Game</button>`)
+                        document.getElementById('startingGame').addEventListener('click', onStartGame)
                         if(this.pickedGame.toJoin == 'Invited'){
                             document.getElementById('headerOfGame').insertAdjacentHTML('beforeend', `<label id="gameCode">${this.pickedGame.ID}</label>`)
                             document.getElementById('gameCode').addEventListener('click', (event) => {
@@ -275,16 +282,21 @@ export default {
                         }
                     } else {
                         document.getElementById('headerOfGame').insertAdjacentHTML('beforeend', `
-                        <button id="pauseGame">Pause</button>
-                        <button id="skipQuestion">Skip QN</button>
-                        <button id="skipRound">Skip Round</button>`)
+                        <button id="pauseGame"><img src="img/pause.png" alt="pause"></button>
+                        <button id="skipQuestion">></button>
+                        <button id="skipRound">> ></button>`)
                         document.getElementById('pauseGame').addEventListener('click', this.onPauseGameBtn)
                         document.getElementById('skipQuestion').addEventListener('click', this.onSkipQuestionBtn)
                         document.getElementById('skipRound').addEventListener('click', this.onSkipRoundBtn)
                     }   
                 } else {
                     document.getElementById('headerOfGame').insertAdjacentHTML('beforeend', `
-                    <button id="leaveBtn">Leave</button>
+                    <button id="leaveBtn"><svg class="backBtn" width="70" height="127" viewBox="0 0 151 127" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16.3 65.6964L4 59.1071L16.3 53.3964L127 2L26.3636 59.9058L127 125L16.3 65.6964Z" fill="#145367"/>
+                <path d="M16.3 65.6964L4 59.1071L16.3 53.3964M16.3 65.6964L127 125L16.3 53.3964M16.3 65.6964L127 2L16.3 53.3964" stroke="#145367" stroke-width="3"/>
+                <path d="M78.1236 65.4737L70.1832 61.3004L78.0611 57.5668L148.962 23.9644L84.5634 61.7001L149.587 103.033L78.1236 65.4737Z" fill="#145367"/>
+                <path d="M78.1236 65.4737L70.1832 61.3004L78.0611 57.5668M78.1236 65.4737L149.587 103.033L78.0611 57.5668M78.1236 65.4737L148.962 23.9644L78.0611 57.5668" stroke="#145367" stroke-width="3"/>
+                </svg></button>
                     `)
                 }
                 document.getElementById('headerOfGame').insertAdjacentHTML('beforeend', `
@@ -336,15 +348,15 @@ export default {
                         }
                         setTimeout(() => {
                                 document.getElementById('showBlock').style.display = 'none'
-                                if (document.getElementById('startGame')){
-                                    document.getElementById('startGame').remove()
+                                if (document.getElementById('startingGame')){
+                                    document.getElementById('startingGame').remove()
                                     if (document.getElementById('gameCode')){
                                         document.getElementById('gameCode').remove()
                                     }
                                     document.getElementById('headerOfGame').insertAdjacentHTML('beforeend', `
-                                    <button id="pauseGame">Pause</button>
-                                    <button id="skipQuestion">Skip QN</button>
-                                    <button id="skipRound">Skip Round</button>`)
+                                    <button id="pauseGame"><img src="img/pause.png" alt="pause"></button>
+                                    <button id="skipQuestion">></button>
+                                    <button id="skipRound">> ></button>`)
                                     document.getElementById('pauseGame').addEventListener('click', this.onPauseGameBtn)
                                     document.getElementById('skipQuestion').addEventListener('click', this.onSkipQuestionBtn)
                                     document.getElementById('skipRound').addEventListener('click', this.onSkipRoundBtn)
@@ -455,9 +467,15 @@ export default {
                                 <label>${wrongAnswers[i]}</label></div>`)
                             }
                             if (randAnswer > (Array.from(document.getElementsByClassName('answersTest')).length-1)){
-                                Array.from(document.getElementsByClassName('answersTest'))[randAnswer-1].parentElement.insertAdjacentHTML('afterend', `
+                                if (Array.from(document.getElementsByClassName('answersTest'))[randAnswer-1] !== undefined){
+                                    Array.from(document.getElementsByClassName('answersTest'))[randAnswer-1].parentElement.insertAdjacentHTML('afterend', `
+                                    <div><input type="radio" class="answersTest" name="answers" value="${firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]}">
+                                    <label>${firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]}</label></div>`)
+                                } else {
+                                Array.from(document.getElementsByClassName('answersTest'))[randAnswer].parentElement.insertAdjacentHTML('beforebegin', `
                                 <div><input type="radio" class="answersTest" name="answers" value="${firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]}">
                                 <label>${firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]}</label></div>`)
+                            }
                             } else {
                                 Array.from(document.getElementsByClassName('answersTest'))[randAnswer].parentElement.insertAdjacentHTML('beforebegin', `
                                 <div><input type="radio" class="answersTest" name="answers" value="${firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]}">
@@ -492,8 +510,8 @@ export default {
             },
             onQuestion: function(event){
                 if (firebase.data().uid == firebase.data().pickedGame.gameLine.turn.id && Array.from(event.currentTarget.getElementsByClassName('questionMark')).length > 0){
-                if (document.getElementsByClassName('markAnswerBtns').length > 0){
-                    Array.from(document.getElementsByClassName('markAnswerBtns')).forEach(element => element.remove())
+                if (document.getElementById('chooseRightOrWrongAnswer')){
+                    document.getElementById('chooseRightOrWrongAnswer').remove()
                 }
                 document.getElementById('rightAnswerLbl').innerText = ''
                 document.getElementById('answerLbl').innerText = ''
@@ -545,8 +563,8 @@ export default {
                     }, 1000)
                     document.getElementById('questionBlock').style.display = 'grid'
                     document.getElementById('tableWithQuestions').style.display = 'none'
-                    if (document.getElementsByClassName('markAnswerBtns').length > 0){
-                    Array.from(document.getElementsByClassName('markAnswerBtns')).forEach(element => element.remove())
+                    if (document.getElementById('chooseRightOrWrongAnswer')){
+                        document.getElementById('chooseRightOrWrongAnswer').remove()
                     }
                     document.getElementById('rightAnswerLbl').innerText = ''
                     document.getElementById('answerLbl').innerText = ''
@@ -585,8 +603,8 @@ export default {
                 if (Array.from(document.getElementsByClassName('questionMark')).length > 0){
                     indexAnswer = Math.round(Math.random() * (Array.from(document.getElementsByClassName('questionMark')).length - 1))
                 if (firebase.data().uid == firebase.data().pickedGame.gameLine.turn.id){
-                    if (document.getElementsByClassName('markAnswerBtns').length > 0){
-                        Array.from(document.getElementsByClassName('markAnswerBtns')).forEach(element => element.remove())
+                    if (document.getElementById('chooseRightOrWrongAnswer')){
+                        document.getElementById('chooseRightOrWrongAnswer').remove()
                     }
                     document.getElementById('answerLbl').innerText = ''
                     clearTimeout(timerOnPickQn)
@@ -740,8 +758,10 @@ export default {
                     (firebase.data().pickedGame.isHost == "NoHost" && firebase.data().pickedGame.gameLine.turn.id !== firebase.data().uid && isWrongAnswersArrZero)){
                         if (document.getElementsByClassName('markAnswerBtns').length < 1){
                             document.getElementById('questionBlock').insertAdjacentHTML('beforeend', `
+                            <div id="chooseRightOrWrongAnswer">
                             <button class="markAnswerBtns" id="wrongAnswerBtn">Wrong</button>
                             <button class="markAnswerBtns" id="rightAnswerBtn">Right</button>
+                            </div>
                             `)
                             Array.from(document.getElementsByClassName('markAnswerBtns')).forEach(element => element.addEventListener('click', onIsItRightAnswer))
                         }
@@ -759,11 +779,15 @@ export default {
     position: absolute;
     top: 0;
     left: 0;
-    background-color: pink;
+    background: linear-gradient(180deg, #76C5EF, #69afd4);
     color: black;
     font-size: weight;
     width: 100vw;
     height: 100vh;
+}
+#announceWinnerBlock *{
+    place-self: center;
+    font-size: 3em;
 }
 #playerChangePointsBlock{
     position: absolute;
@@ -792,18 +816,47 @@ export default {
     pointer-events: none;
 }
 #questionBlock{
+    border: 4px solid #145367;
+    border-radius: 10px;
     display: none;
     margin: 0;
     width: 96%;
     height: 100%;
     place-self: center;
+    grid-template-columns: 100%;
+    grid-template-rows: 10% 60% 9% 9% 12%;
+}
+#answerLbl{
+    color: #2185A6
+}
+#rightAnswerLbl{
+    color: #145367;
+}
+#chooseRightOrWrongAnswer{
+    display: flex;
+}
+#wrongAnswerBtn{
+    flex: 1;
+    border: 2px solid #145367;
+    border-radius: 5px;
+    background: #2185A6;
+}
+#questionBlock > label {
+    text-align: center;
+    line-height: 50px;
+}
+#rightAnswerBtn{
+    flex: 1;
+    border: 2px solid #145367;
+    border-radius: 5px;
+    background: #76C5EF;
 }
 .player{
     display: grid;
     grid-template-columns: 100%;
-    grid-template-rows: 1fr, 24px, 24px;
+    grid-template-rows: calc(100% - 48px) 24px 24px;
     width: 12.5%;
-    height: 50%;
+    height: 90%;
 }
 .playersNick{
     word-break: break-all;
@@ -813,6 +866,11 @@ export default {
     word-break: break-all;
     place-self: center;
 }
+#answerInp{
+    background: transparent;
+    border: 4px solid #145367;
+    border-radius: 10px;
+}
 #gameBlock{
     display: grid;
     width: 100vw;
@@ -821,7 +879,94 @@ export default {
     grid-template-rows: 12% 73% 15%;
 }
 #headerOfGame{
-
+    display: grid;
+    grid-template-columns: repeat(5, 20%);
+    grid-template-rows: 50% 50%;
+    grid-template-areas: "leaveBtn space codePause skipQn skipRound"
+    "start start start start start";
+}
+#gameCode{
+    grid-area: codePause;
+    place-self: center;
+}
+#pauseGame{
+    grid-area: codePause;
+    background: none;
+    border: none;
+}
+#questionLbl{
+    font-size: 1.5em;
+    overflow: hidden;
+    color: #145367;
+}
+#answerLbl{
+    font-size: 1.5em;
+    overflow: hidden;
+}
+#rightAnswerLbl{
+    font-size: 1.5em;
+    overflow: hidden;
+}
+#skipQuestion{
+    grid-area: skipQn;
+    background: none;
+    border: none;
+    color: white;
+    border: none;
+    font-size: 24px;
+    font-weight: bold;
+    font-family: unset;
+}
+#skipRound{
+    grid-area: skipRound;
+    background: none;
+    border: none;
+    color: white;
+    border: none;
+    font-size: 24px;
+    font-weight: bold;
+    font-family: unset;
+}
+#testTypeAnswer > form > div{
+    background: #2185A6;
+    border-bottom: 1px solid #145367;
+    height: 30%;
+    font-size: 1.5em;
+}
+#testTypeAnswer > form > div > label{
+    text-align: center;
+}
+#testTypeAnswer > form > div > input{
+}
+#startingGame{
+    grid-area: start;
+    width: 100vw;
+    align-self: end;
+    height: 50%;
+    border: none;
+    border-top-left-radius: 10%;
+    border-top-right-radius: 10%;
+    background: #E17BB3;
+    color: #145367;
+    border-radius: 25px;
+    place-self: center;
+}
+#mediaFile{
+    place-self: center;
+}
+#mediaFile *{
+    max-width: 80%;
+    max-height: 80%;
+}
+#onAnsweredBtn{
+    position: absolute;
+    width: 96vw;
+    top: 90%;
+    height: 10%;
+    margin-left: -5px;
+    border: none;
+    border-radius: 10px;
+    background: #145367;
 }
 #playersBlock{
     display: flex;
@@ -839,10 +984,11 @@ export default {
   grid-template-columns: repeat(6, 16.67%);
   grid-template-rows: repeat(8, 12.5%);
   place-self: center;
+  border: 4px solid #145367;
+    border-radius: 10px;
 }
-
 #tableWithQuestions > * {
-  border: 1px solid black;
+  border: 1px solid #145367;
   width: 100%;
   height: 100%;
   background: transparent;
@@ -854,10 +1000,29 @@ export default {
   display: flex;
   place-items: center;
   place-content: center;
+      border-radius: 5px;
+    font-family: 'Jua', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    color: white;
+    line-height: 25px;
+}
+#resumeGameBtn{
+    border: none;
+    background: transparent;
 }
 #game{
     width: 100vw;
     height: 100vh;
+    background: radial-gradient(#8ac9eb, #2b84b3);
+    display: grid;
+    grid-template-columns: 100%;
+    grid-template-rows: 7% 76% 17%;
+}
+#timerForGame{
+    font-size: 2em;
+    place-self: center;
+    grid-area: start;
 }
 #showBlock{
     display: none;
@@ -866,8 +1031,12 @@ export default {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgb(20, 131, 146);
+    background: #2185A6;
     z-index: 9;
+}
+#showBlock *{
+    place-self: center;
+    font-size: 3em;
 }
 #pauseWindow{
     display: none;
@@ -879,8 +1048,32 @@ export default {
     backdrop-filter: blur(4px) brightness(60%);
     z-index: 9999;
 }
+#pauseWindow *{
+    place-self: center;
+    font-size: 3em;
+}
+#leaveBtn{
+    width: 0;
+    border: none;
+    background: transparent;
+}
+#playerChangePoints > input{
+    background: #2185A6;
+    border: none;
+    border-radius: 20px;
+    font-size: 2em;
+    text-align: center;
+}
+#playerChangePoints > button{
+    background: #145367;
+    border: none;
+    border-radius: 20px;
+    font-size: 2em;
+}
 .playerAvatars{
-    width: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    place-self: center;
 }
 @media screen and (max-device-width: 1024px) {
   #tableWithQuestions > * {

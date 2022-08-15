@@ -150,7 +150,11 @@ import firebase from '../firebase.js'
         },
         mounted(){
             if (!document.getElementById('userMenuIcon').src){
-                document.getElementById('userMenuIcon').src = firebase.data().myIcon
+                if (firebase.data().myIcon){
+                    document.getElementById('userMenuIcon').src = firebase.data().myIcon
+                } else {
+                    document.getElementById('userMenuIcon').src = 'img/defaultIcon.png'
+                }
             }
         }
     }
