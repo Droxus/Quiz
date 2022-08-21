@@ -333,7 +333,7 @@ export default {
                             document.getElementById('tableWithQuestions').insertAdjacentHTML('beforeend', `<div class="category">Category ${i+1}</div>`)
                         }
                         for (let j = 0; j < this.pickedGame.pickedPack.rounds[round].points.length; j++){
-                            document.getElementById('tableWithQuestions').insertAdjacentHTML('beforeend', `<div class="qustions"><img draggable="false" class="questionMark" src="/img/questionMark.png" alt="?"></div>`)
+                            document.getElementById('tableWithQuestions').insertAdjacentHTML('beforeend', `<div class="qustions"><img draggable="false" class="questionMark" src="img/questionMark.png" alt="?"></div>`)
                         }
                     }
                     Array.from(document.getElementsByClassName('qustions')).forEach(element => element.addEventListener('click', this.onQuestion))
