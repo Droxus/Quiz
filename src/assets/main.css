@@ -7,6 +7,7 @@
 }
 body {
   background: #2b84b3;
+  background: radial-gradient(#8ac9eb, #2b84b3);
   overflow: hidden;
   font-family: 'Jua', sans-serif;
   font-style: normal;
@@ -48,12 +49,18 @@ a,
   transition: 0.4s;
 }
 .pageName{
-  margin-left: -20%;
   font-size: 1.5em;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   z-index: 1;
+  height: 5vh;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  margin: 0;
+  transform: translate(-50%, 0);
+  color: white;
+  text-align: center;
+  display: flex;
+  align-items: center;
 }
 @media screen and (max-device-width: 1024px) {
   .tabelQuestionCreate > * {
@@ -98,6 +105,9 @@ a,
 }
 .playersNick{
   font-size: 0.9em;
+}
+#nowTurnPlayerName{
+  font-size: 1.5em;
 }
 }
 @media screen and (min-device-width: 1024px) {
@@ -144,6 +154,9 @@ a,
 .playersNick{
   font-size: 1.5em;
 }
+#nowTurnPlayerName{
+  font-size: 2.5em;
+}
 }
 /*        slider         */
 .slider {
@@ -157,17 +170,17 @@ a,
   -webkit-transition: .4s;
   transition: .4s;
   width: 70px;
-  height: 42px;
+  height: 45px;
   border: 5px solid #145367;
 }
 
 .slider:before {
   position: absolute;
   content: "";
-  height: 26px;
-  width: 26px;
+  height: 25px;
+  width: 25px;
   left: 4px;
-  bottom: 4px;
+  bottom: 5px;
   background: #2185A6;
   -webkit-transition: .4s;
   transition: .4s;
@@ -262,5 +275,5 @@ input:checked + .slider:before {
 }
 .backBtn{
   height: 100%;
-  z-index: 2;
+  z-index: 99999999999;
 }

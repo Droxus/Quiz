@@ -100,7 +100,7 @@ let firebaseLoaded = 0
                 .then((metadata) => {
                   switch (metadata.contentType.slice(0, 5)) {
                     case 'image':
-                      document.getElementById('mediaFile').insertAdjacentHTML('beforeend', `<img src="${url}" alt="file" class="fileMediaElement" importance="high" loading="eager">`)
+                      document.getElementById('mediaFile').insertAdjacentHTML('beforeend', `<img draggable="false" src="${url}" alt="file" class="fileMediaElement" importance="high" loading="eager">`)
                       break;
                     case 'video':
                       document.getElementById('mediaFile').insertAdjacentHTML('beforeend', `<video class="fileMediaElement" autoplay autobuffer preload="auto"><source src="${url}"></video>`)

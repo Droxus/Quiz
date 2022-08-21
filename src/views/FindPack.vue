@@ -5,7 +5,7 @@
     <div id="findPackHeader">
         <div id="backAndPageName">
             <router-link :to="'/'">
-            <svg class="backBtn" width="70" height="127" viewBox="0 0 151 127" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg class="backBtn" width="71" height="127" viewBox="0 0 151 127" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M16.3 65.6964L4 59.1071L16.3 53.3964L127 2L26.3636 59.9058L127 125L16.3 65.6964Z" fill="#145367"/>
             <path d="M16.3 65.6964L4 59.1071L16.3 53.3964M16.3 65.6964L127 125L16.3 53.3964M16.3 65.6964L127 2L16.3 53.3964" stroke="#145367" stroke-width="3"/>
             <path d="M78.1236 65.4737L70.1832 61.3004L78.0611 57.5668L148.962 23.9644L84.5634 61.7001L149.587 103.033L78.1236 65.4737Z" fill="#145367"/>
@@ -31,8 +31,13 @@
 </div>
     <div id="packQuestionForm">
         <header>
-            <button @click="closePackForm()">Back</button>
-            <label id="packNameAtQuestionForm"></label>
+            <button id="backBtnFp" @click="closePackForm()"><svg class="backBtn" width="71" height="127" viewBox="0 0 151 127" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M16.3 65.6964L4 59.1071L16.3 53.3964L127 2L26.3636 59.9058L127 125L16.3 65.6964Z" fill="#145367"/>
+                <path d="M16.3 65.6964L4 59.1071L16.3 53.3964M16.3 65.6964L127 125L16.3 53.3964M16.3 65.6964L127 2L16.3 53.3964" stroke="#145367" stroke-width="3"/>
+                <path d="M78.1236 65.4737L70.1832 61.3004L78.0611 57.5668L148.962 23.9644L84.5634 61.7001L149.587 103.033L78.1236 65.4737Z" fill="#145367"/>
+                <path d="M78.1236 65.4737L70.1832 61.3004L78.0611 57.5668M78.1236 65.4737L149.587 103.033L78.0611 57.5668M78.1236 65.4737L148.962 23.9644L78.0611 57.5668" stroke="#145367" stroke-width="3"/>
+                </svg></button>
+            <label class="pageName" id="packNameAtQuestionForm"></label>
         </header>
         <main>
 
@@ -49,8 +54,6 @@
     height: 100vh;
     overflow-y: scroll;
     overflow-x: hidden;
-    background: #76C5EF;
-    background: radial-gradient(#8ac9eb, #2b84b3);
 }
 #findPack::-webkit-scrollbar{
     width: 0px;
@@ -65,6 +68,8 @@
     display: grid;
     grid-template-rows: 100%;
     grid-template-columns: 20% 80%;
+    position: sticky;
+    top: 0;
 }
 #packsBlock{
     width: 100%;
@@ -80,7 +85,20 @@
     top: 0;
     left: 0;
     width: 100vw;
-    height: 100%;
+    height: 100vh;
+    overflow: scroll;
+    scrollbar-width: none;
+}
+#packQuestionForm::-webkit-scrollbar{
+    width: 0;
+    display: none;
+}
+#backBtnFp{
+    background: transparent;
+    border: none;
+    width: 0;
+    height: 4.5vh;
+    padding: 0;
 }
 </style>
 <script>
@@ -98,7 +116,7 @@ export default {
                 while (document.getElementById('packQuestionForm').getElementsByTagName('main')[0].firstElementChild){
                     document.getElementById('packQuestionForm').getElementsByTagName('main')[0].firstElementChild.remove()
                 }
-                document.getElementById('findPack').style.display = 'block'
+                document.getElementById('findPack').style.display = 'grid'
             },
         }
     }

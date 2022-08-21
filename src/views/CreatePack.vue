@@ -74,11 +74,11 @@
         <button id="saveBtn" @click="onSaveBtn()">Save</button>
     </footer>
     <div id="makeQuestion">
-                    <img class="qnCreateIcons" src="/img/questionMark.png" alt="qnMark">
+                    <img draggable="false" class="qnCreateIcons" src="/img/questionMark.png" alt="qnMark">
                     <textarea id="questionInputArea" rows="1" placeholder="write question here"></textarea>
-                    <img class="qnCreateIcons" src="/img/ExclamationPoint.png" alt="exclamationPoint">
+                    <img draggable="false" class="qnCreateIcons" src="/img/ExclamationPoint.png" alt="exclamationPoint">
                     <textarea id="answerInputArea" rows="1" placeholder="write answer here"></textarea>
-                    <img class="qnCreateIcons" src="/img/cross.png" alt="cross">
+                    <img draggable="false" class="qnCreateIcons" src="/img/cross.png" alt="cross">
                     <textarea class="wrongAnswerInputArea" rows="1" placeholder="write WRONG answer here"></textarea>
                     <textarea class="wrongAnswerInputArea" rows="1" placeholder="write WRONG answer here"></textarea>
                     <textarea class="wrongAnswerInputArea" rows="1" placeholder="write WRONG answer here"></textarea>
@@ -86,7 +86,7 @@
             <div @click="onFileChooseClick()" id="fileUploadBlock">
                 <label id="chooseFileLbl" for="file">Choose file to upload</label>
                     <input type="file" id="fileDropInp" name="file" multiple @input="onFileLoad($event)">
-                    <img id="fileIcon" class="qnCreateIcons" src="/img/fileIcon.png" alt="fileIcon">
+                    <img draggable="false" id="fileIcon" class="qnCreateIcons" src="/img/fileIcon.png" alt="fileIcon">
             </div>
         </form>
         <button id="questionDone" @click="onDoneQuestion()">Done</button>
@@ -125,16 +125,9 @@
 </template>
 
 <style>
-.pageName{
-  margin-left: -20%;
-  font-size: 1.5em;
-  z-index: 1;
-  height: 5vh;
-}
 #createPacke{
   width: 100vw;
   height: 100vh;
-  background: radial-gradient(#8ac9eb, #2b84b3);
   display: grid;
   grid-template-columns: 100%;
   grid-template-rows: 7% 76% 17%;
@@ -251,40 +244,43 @@ footer{
   display: none;
 }
 #questionInputArea{
-  resize: none;
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid #145367;
-  outline: none;
-  width: 100%;
-  font-size: 24px;
-  color: white;
-  padding: 5%;
+    resize: none;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #145367;
+    outline: none;
+    width: 100%;
+    font-size: 24px;
+    color: white;
+    padding: 5%;
+    scrollbar-width: none;
 }
 #questionInputArea::selection{
-  color: black;
+    color: black;
 }
 #answerInputArea{
-  resize: none;
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid #145367;
-  outline: none;
-  width: 100%;
-  font-size: 24px;
-  color: white;
-  padding: 5%;
+    resize: none;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #145367;
+    outline: none;
+    width: 100%;
+    font-size: 24px;
+    color: white;
+    padding: 5%;
+    scrollbar-width: none;
 }
 .wrongAnswerInputArea{
-  resize: none;
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid #145367;
-  outline: none;
-  width: 100%;
-  font-size: 24px;
-  color: white;
-  padding: 5%;
+    resize: none;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #145367;
+    outline: none;
+    width: 100%;
+    font-size: 24px;
+    color: white;
+    padding: 5%;
+    scrollbar-width: none;
 }
 .wrongAnswerInputArea::placeholder{
   font-size: 18px;
@@ -437,6 +433,8 @@ footer{
     border-bottom-right-radius: 25px;
     border-top-right-radius: 25px;
     border: none;
+    height: 100%;
+    box-sizing: content-box;
 }
 #unsavedDataBtnsBlock > button:nth-child(odd){
     background: #2185A6;
@@ -444,6 +442,8 @@ footer{
     border-bottom-left-radius: 25px;
     border-top-left-radius: 25px;
     border: none;
+    height: 100%;
+    box-sizing: content-box;
 }
 #fileIcon{
     max-height: 50%;
@@ -622,9 +622,9 @@ export default {
                     currentInputPick.firstElementChild.remove()
                 }
                 if (document.getElementById('questionInputArea').value !== '' && document.getElementById('answerInputArea').value !== ''){
-                    currentInputPick.insertAdjacentHTML('beforeend', `<img class="questionMark" src="/img/questionMark.png"></img>`)
+                    currentInputPick.insertAdjacentHTML('beforeend', `<img draggable="false" class="questionMark" src="/img/questionMark.png"></img>`)
                 } else {
-                    currentInputPick.insertAdjacentHTML('beforeend', `<img class="minusIcon" src="img/minus.png"></img>`)
+                    currentInputPick.insertAdjacentHTML('beforeend', `<img draggable="false" class="minusIcon" src="img/minus.png"></img>`)
                 }
                 currentInputPick.setAttribute('question', document.getElementById('questionInputArea').value)
                 currentInputPick.setAttribute('answer', document.getElementById('answerInputArea').value)
@@ -679,7 +679,7 @@ export default {
                     
                     switch (event.target.files[0].type.slice(0, 5)) {
                         case 'image':
-                            event.target.parentElement.insertAdjacentHTML('beforeend', `<img class="fileMediaElement" src="${window.URL.createObjectURL(event.target.files[0])}" alt="photo" id="thisPhoto"></img>`)
+                            event.target.parentElement.insertAdjacentHTML('beforeend', `<img draggable="false" class="fileMediaElement" src="${window.URL.createObjectURL(event.target.files[0])}" alt="photo" id="thisPhoto"></img>`)
                             break;
                         case 'video':
                             event.target.parentElement.insertAdjacentHTML('beforeend', `<video class="fileMediaElement" controls><source src="${window.URL.createObjectURL(event.target.files[0])}"></video>`)

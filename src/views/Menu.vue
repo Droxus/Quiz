@@ -21,7 +21,7 @@
         <router-link class="menuNavBtns" :to="'/createPack'">Create Pack</router-link>
     </div>
     <div id="menuUserNickAva">
-        <img id="userMenuIcon" width="48px" alt="icon" @click="changeIcon()">
+        <img draggable="false" id="userMenuIcon" width="48px" alt="icon" @click="changeIcon()">
         <input type="text" id="inputUserNick" :value="userName" @change="onUserName($event)">
         <input id="chooseAvatarInp" type="file" @input="onChangeIcon($event)">
     </div>
@@ -36,8 +36,6 @@
     width: 100vw;
     height: 100vh;
     overflow: hidden;
-    background: #76C5EF;
-    background: radial-gradient(#8ac9eb, #2b84b3);
 }
 #chooseAvatarInp{
     display: none;
@@ -47,7 +45,7 @@
     border-radius: 50%;
     align-self: end;
     justify-self: center;
-    margin-bottom: -8%;
+    margin-bottom: -10%;
     z-index: 2;
     border: 4px solid #04455a;
 }
@@ -85,6 +83,7 @@
     font-size: 1.5em;
     z-index: 1;
     outline: none;
+    padding-top: 7%;
 }
 #gameName{
     display: flex;
@@ -94,10 +93,10 @@
     margin: 2%;
 }
 #gameName > *:nth-child(odd){
-    animation: 1.5s linear 0s infinite alternate rotateOddName;
+    animation: 1.5s ease-in-out 0s infinite alternate rotateOddName;
 }
 #gameName > *:nth-child(even){
-    animation: 1.5s linear 0s infinite alternate rotateName;
+    animation: 1.5s ease-in-out 0s infinite alternate rotateName;
 }
 @keyframes rotateName{
     from {

@@ -24,7 +24,7 @@
     </div>
     <div id="pauseWindow">
         <label>Game Paused</label>
-        <button id="resumeGameBtn" @click="onResumeGame()"><img src="/img/play.png" alt="resume"></button>
+        <button id="resumeGameBtn" @click="onResumeGame()"><img draggable="false" src="/img/play.png" alt="resume"></button>
     </div>
     <div id="playerChangePointsBlock" @click="closePointchangeWindow($event)">
         <div id="playerChangePoints" @click="$event.stopPropagation()">
@@ -81,7 +81,7 @@ function onAnsweredBtn(){
                             if (firebase.data().pickedGame.pickedPack.rounds[round].wrongAnswers[indexAnswer].length > 0){
                                 let playerAnswer = Array.from(document.getElementsByClassName('answersTest')).find(element => element.value == firebase.data().pickedGame.gameLine.answer.answer)
                                 if (playerAnswer){
-                                    playerAnswer.parentElement.style.color = 'orange'
+                                    playerAnswer.parentElement.style.background = '#2185A6'
                                 }
                             } else {
                                 document.getElementById('answerLbl').innerText = firebase.data().pickedGame.gameLine.answer.answer
@@ -120,7 +120,7 @@ function onAnsweredBtn(){
                     if (Array.isArray(firebase.data().pickedGame.pickedPack.rounds[round].wrongAnswers[indexAnswer])){
                         if (firebase.data().pickedGame.pickedPack.rounds[round].wrongAnswers[indexAnswer].length > 0){
                             let rightAnswer = Array.from(document.getElementsByClassName('answersTest')).find(element => element.value == firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer])
-                            rightAnswer.parentElement.style.color = 'green'
+                            rightAnswer.parentElement.style.background = '#76C5EF'
                         } else {
                             document.getElementById('rightAnswerLbl').innerText = firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]
                             if (document.getElementsByClassName('fileMediaElement')[0] !== undefined){
@@ -163,6 +163,15 @@ function onAnsweredBtn(){
                     }
                 }
             }
+            
+            function onTestAnswerChoose(event){
+                Array.from(event.target.parentElement.parentElement.getElementsByClassName('answersTest')).forEach(element => element.parentElement.style.background = '#2185A6')
+                if (event.target.checked === true){
+                    event.target.parentElement.style.background = '#145367'
+                } else {
+                    event.target.parentElement.style.background = '#2185A6'
+                }
+            }
             function wrongAnswersAddWithRand(){
                 let randAnswer = Math.round(Math.random() * Array.from(document.getElementsByClassName('answersTest')).length)
                 if (firebase.data().pickedGame.pickedPack.rounds[round].wrongAnswers){
@@ -173,22 +182,28 @@ function onAnsweredBtn(){
                                     firebase.data().informWrongAnswer(randAnswer)
                                 }
                             document.getElementById('testTypeAnswer').style.display = 'grid'
+                            document.getElementById('testTypeAnswer').getElementsByTagName('form')[0].style.display = 'grid'
                             while (document.getElementById('testTypeAnswer').getElementsByTagName('form')[0].firstElementChild){
                                 document.getElementById('testTypeAnswer').getElementsByTagName('form')[0].firstElementChild.remove()
                             }
                             for (let i = 0; i < wrongAnswers.length; i++){
                                 document.getElementById('testTypeAnswer').getElementsByTagName('form')[0].insertAdjacentHTML('beforeend', `
-                                <div><input type="radio" class="answersTest" name="answers" value="${wrongAnswers[i]}">
-                                <label>${wrongAnswers[i]}</label></div>`)
+                                <label><input type="radio" class="answersTest" name="answers" value="${wrongAnswers[i]}">
+                                <i>${wrongAnswers[i]}</i></label>`)
                             }
                             if (randAnswer > (Array.from(document.getElementsByClassName('answersTest')).length-1)){
                                 Array.from(document.getElementsByClassName('answersTest'))[randAnswer-1].parentElement.insertAdjacentHTML('afterend', `
-                                <div><input type="radio" class="answersTest" name="answers" value="${firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]}">
-                                <label>${firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]}</label></div>`)
+                                <label><input type="radio" class="answersTest" name="answers" value="${firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]}">
+                                <i>${firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]}</i></label>`)
                             } else {
                                 Array.from(document.getElementsByClassName('answersTest'))[randAnswer].parentElement.insertAdjacentHTML('beforebegin', `
-                                <div><input type="radio" class="answersTest" name="answers" value="${firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]}">
-                                <label>${firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]}</label></div>`)
+                                <label><input type="radio" class="answersTest" name="answers" value="${firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]}">
+                                <i>${firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]}</i></label>`)
+                            }
+                            Array.from(document.getElementsByClassName('answersTest')).forEach(element => element.addEventListener('click', onTestAnswerChoose))
+                            document.getElementById('answerInp').display = 'none'
+                            if (document.getElementById('questionBlock') == undefined){
+                                document.getElementById('questionBlock').insertAdjacentHTML('beforeend', `<button id="onAnsweredBtn">Answered</button>`)
                             }
                         }   
                     }
@@ -225,7 +240,7 @@ export default {
                 for (let i = 0; i < activePlayers.length; i++){
                     document.getElementById('playersBlock').insertAdjacentHTML('beforeend', `
                         <div class="player">
-                        <img class="playerAvatars" src="${activePlayers.icon ? activePlayers.icon : '#'}" alt="Icon">
+                        <img draggable="false" class="playerAvatars" src="${activePlayers.icon ? activePlayers.icon : '#'}" alt="Icon">
                         <label class="playersNick">${activePlayers[i].name}</label>
                         <label class="playersPoints">${activePlayers[i].points ? activePlayers[i].points : 0}</label>
                     </div>`)
@@ -282,7 +297,7 @@ export default {
                         }
                     } else {
                         document.getElementById('headerOfGame').insertAdjacentHTML('beforeend', `
-                        <button id="pauseGame"><img src="img/pause.png" alt="pause"></button>
+                        <button id="pauseGame"><img draggable="false" src="img/pause.png" alt="pause"></button>
                         <button id="skipQuestion">></button>
                         <button id="skipRound">> ></button>`)
                         document.getElementById('pauseGame').addEventListener('click', this.onPauseGameBtn)
@@ -318,7 +333,7 @@ export default {
                             document.getElementById('tableWithQuestions').insertAdjacentHTML('beforeend', `<div class="category">Category ${i+1}</div>`)
                         }
                         for (let j = 0; j < this.pickedGame.pickedPack.rounds[round].points.length; j++){
-                            document.getElementById('tableWithQuestions').insertAdjacentHTML('beforeend', `<div class="qustions"><img class="questionMark" src="/img/questionMark.png" alt="?"></div>`)
+                            document.getElementById('tableWithQuestions').insertAdjacentHTML('beforeend', `<div class="qustions"><img draggable="false" class="questionMark" src="/img/questionMark.png" alt="?"></div>`)
                         }
                     }
                     Array.from(document.getElementsByClassName('qustions')).forEach(element => element.addEventListener('click', this.onQuestion))
@@ -354,7 +369,7 @@ export default {
                                         document.getElementById('gameCode').remove()
                                     }
                                     document.getElementById('headerOfGame').insertAdjacentHTML('beforeend', `
-                                    <button id="pauseGame"><img src="img/pause.png" alt="pause"></button>
+                                    <button id="pauseGame"><img draggable="false" src="img/pause.png" alt="pause"></button>
                                     <button id="skipQuestion">></button>
                                     <button id="skipRound">> ></button>`)
                                     document.getElementById('pauseGame').addEventListener('click', this.onPauseGameBtn)
@@ -373,6 +388,7 @@ export default {
                 if (firebase.data().pickedGame.host.id == firebase.data().uid){
                     this.pauseGame
                     firebase.data().pauseGame()
+                    Array.from(document.getElementsByClassName('backBtn')[0].children).forEach(element => {element.style.stroke = '#E17BB3'; element.style.fill = '#E17BB3'}) 
                 }
             },
             pauseGame: function(){
@@ -391,7 +407,9 @@ export default {
                             document.getElementsByClassName('fileMediaElement')[0].pause()
                         }
                     }
+                    Array.from(document.getElementsByClassName('backBtn')[0].children).forEach(element => {element.style.stroke = '#E17BB3'; element.style.fill = '#E17BB3'}) 
                 } else {
+                    Array.from(document.getElementsByClassName('backBtn')[0].children).forEach(element => {element.style.stroke = '#145367'; element.style.fill = '#145367'}) 
                     document.getElementById('pauseWindow').style.display = 'none'
                     let delay = document.getElementById('timerForGame').innerText
                     if (document.getElementById('tableWithQuestions').style.display !== 'none'){
@@ -458,29 +476,33 @@ export default {
                                     firebase.data().informWrongAnswer(randAnswer)
                                 }
                             document.getElementById('testTypeAnswer').style.display = 'grid'
+                            document.getElementById('testTypeAnswer').getElementsByTagName('form')[0].style.display = 'grid'
                             while (document.getElementById('testTypeAnswer').getElementsByTagName('form')[0].firstElementChild){
                                 document.getElementById('testTypeAnswer').getElementsByTagName('form')[0].firstElementChild.remove()
                             }
                             for (let i = 0; i < wrongAnswers.length; i++){
                                 document.getElementById('testTypeAnswer').getElementsByTagName('form')[0].insertAdjacentHTML('beforeend', `
-                                <div><input type="radio" class="answersTest" name="answers" value="${wrongAnswers[i]}">
-                                <label>${wrongAnswers[i]}</label></div>`)
+                                <label><input type="radio" class="answersTest" name="answers" value="${wrongAnswers[i]}">
+                                <i>${wrongAnswers[i]}</i></label>`)
                             }
                             if (randAnswer > (Array.from(document.getElementsByClassName('answersTest')).length-1)){
                                 if (Array.from(document.getElementsByClassName('answersTest'))[randAnswer-1] !== undefined){
                                     Array.from(document.getElementsByClassName('answersTest'))[randAnswer-1].parentElement.insertAdjacentHTML('afterend', `
-                                    <div><input type="radio" class="answersTest" name="answers" value="${firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]}">
-                                    <label>${firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]}</label></div>`)
+                                    <label><input type="radio" class="answersTest" name="answers" value="${firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]}">
+                                    <i>${firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]}</i></label>`)
                                 } else {
-                                Array.from(document.getElementsByClassName('answersTest'))[randAnswer].parentElement.insertAdjacentHTML('beforebegin', `
-                                <div><input type="radio" class="answersTest" name="answers" value="${firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]}">
-                                <label>${firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]}</label></div>`)
+                                if (Array.from(document.getElementsByClassName('answersTest'))[randAnswer] !== undefined){
+                                    Array.from(document.getElementsByClassName('answersTest'))[randAnswer].parentElement.insertAdjacentHTML('beforebegin', `
+                                    <label><input type="radio" class="answersTest" name="answers" value="${firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]}">
+                                    <i>${firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]}</i></label>`)
+                                }
                             }
                             } else {
                                 Array.from(document.getElementsByClassName('answersTest'))[randAnswer].parentElement.insertAdjacentHTML('beforebegin', `
-                                <div><input type="radio" class="answersTest" name="answers" value="${firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]}">
-                                <label>${firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]}</label></div>`)
+                                <label><input type="radio" class="answersTest" name="answers" value="${firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]}">
+                                <i>${firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]}</i></label>`)
                             }
+                            Array.from(document.getElementsByClassName('answersTest')).forEach(element => element.addEventListener('click', onTestAnswerChoose))
                         }   
                     }
                 }
@@ -601,7 +623,15 @@ export default {
             },
             pickRandomQuestion: function(){
                 if (Array.from(document.getElementsByClassName('questionMark')).length > 0){
-                    indexAnswer = Math.round(Math.random() * (Array.from(document.getElementsByClassName('questionMark')).length - 1))
+                    let indexQnAnswer = Math.round(Math.random() * (Array.from(document.getElementsByClassName('questionMark')).length - 1))
+                    for (let i = 0; i < Array.from(document.getElementsByClassName('qustions')).length; i++){
+                        if (Array.from(document.getElementsByClassName('qustions'))[i].getElementsByClassName('questionMark')[0] !== undefined){
+                            if (Array.from(document.getElementsByClassName('qustions'))[i].getElementsByClassName('questionMark')[0] == Array.from(document.getElementsByClassName('questionMark'))[indexQnAnswer]){
+                                indexAnswer = i
+                                break
+                            }
+                        }
+                    }
                 if (firebase.data().uid == firebase.data().pickedGame.gameLine.turn.id){
                     if (document.getElementById('chooseRightOrWrongAnswer')){
                         document.getElementById('chooseRightOrWrongAnswer').remove()
@@ -684,6 +714,7 @@ export default {
                     }
                 }
                 document.getElementById('announceWinnerBlock').style.display = 'grid'
+                document.getElementsByTagName('form')[0].style.display = 'none'
                 document.getElementById('winerIsPlayer').innerText = winner
             },
             onAnswered: function(){
@@ -698,7 +729,7 @@ export default {
                                 if (firebase.data().pickedGame.pickedPack.rounds[round].wrongAnswers[indexAnswer].length > 0){
                                     let playerAnswer = Array.from(document.getElementsByClassName('answersTest')).find(element => element.value == firebase.data().pickedGame.gameLine.answer.answer)
                                     if (playerAnswer !== undefined){
-                                        playerAnswer.parentElement.style.color = 'orange'
+                                        playerAnswer.parentElement.style.background = '#2185A6'
                                     }
                                 } else {
                                     document.getElementById('answerLbl').innerText = firebase.data().pickedGame.gameLine.answer.answer
@@ -707,7 +738,7 @@ export default {
                             if (firebase.data().pickedGame.pickedPack.rounds[round].wrongAnswers[indexAnswer].length > 0){
                                 let rightAnswer = Array.from(document.getElementsByClassName('answersTest')).find(element => element.value == firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer])
                                 if (rightAnswer !== undefined){
-                                rightAnswer.parentElement.style.color = 'green'
+                                rightAnswer.parentElement.style.background = '#76C5EF'
                                 }
                             } else {
                                 document.getElementById('rightAnswerLbl').innerText = firebase.data().pickedGame.pickedPack.rounds[round].answers[indexAnswer]
@@ -824,7 +855,7 @@ export default {
     height: 100%;
     place-self: center;
     grid-template-columns: 100%;
-    grid-template-rows: 10% 60% 9% 9% 12%;
+    grid-template-rows: 10% 60% 8% 8% 8%;
 }
 #answerLbl{
     color: #2185A6
@@ -902,6 +933,21 @@ export default {
 #answerLbl{
     font-size: 1.5em;
     overflow: hidden;
+    z-index: 1;
+}
+form{
+    z-index: 3;
+    grid-template-columns: 50% 50%;
+}
+form > label{
+    place-self: center;
+    border: 2px solid #145367;
+    background: #2185A6;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 #rightAnswerLbl{
     font-size: 1.5em;
@@ -953,10 +999,17 @@ export default {
 }
 #mediaFile{
     place-self: center;
+    width: 100%;
+    height: 100%;
 }
 #mediaFile *{
-    max-width: 80%;
-    max-height: 80%;
+    max-width: 100%;
+    max-height: 100%;
+    place-self: center;
+    place-items: center;
+    place-content: center;
+    margin-left: 50%;
+    transform: translate(-50%, 0);
 }
 #onAnsweredBtn{
     position: absolute;
@@ -1007,6 +1060,9 @@ export default {
     color: white;
     line-height: 25px;
 }
+.answersTest{
+    display: none;
+}
 #resumeGameBtn{
     border: none;
     background: transparent;
@@ -1014,7 +1070,6 @@ export default {
 #game{
     width: 100vw;
     height: 100vh;
-    background: radial-gradient(#8ac9eb, #2b84b3);
     display: grid;
     grid-template-columns: 100%;
     grid-template-rows: 7% 76% 17%;
@@ -1047,6 +1102,12 @@ export default {
     height: 100vh;
     backdrop-filter: blur(4px) brightness(60%);
     z-index: 9999;
+}
+#nowTurnPlayerName{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
 }
 #pauseWindow *{
     place-self: center;

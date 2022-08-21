@@ -35,23 +35,24 @@ export default {
                                     document.getElementById('packNameAtQuestionForm').textContent = `${event.currentTarget.getElementsByClassName('packName')[0].textContent}`
                                     for (let i = 0; i < firebase.data().packs[event.currentTarget.getAttribute('roomid')].rounds.length; i++){
                                     Array.from(document.getElementById('packQuestionForm').getElementsByTagName('main'))[0].insertAdjacentHTML('beforeend', `
-                                        <h1>Round ${i+1}</h1>
+                                        <label class="roundsLbl">Round ${i+1}</label>
                                     `)
                                     if (firebase.data().packs[event.currentTarget.getAttribute('roomid')].rounds[i].categories == undefined){
                                         firebase.data().packs[event.currentTarget.getAttribute('roomid')].rounds[i].categories = ["", "", "", "", "", "", ""]
                                     }
                                     for (let j = 0; j < firebase.data().packs[event.currentTarget.getAttribute('roomid')].rounds[i].categories.length; j++) {
                                         document.getElementById('packQuestionForm').getElementsByTagName('main')[0].insertAdjacentHTML('beforeend', `
-                                        <h2>${firebase.data().packs[event.currentTarget.getAttribute('roomid')].rounds[i].categories[j]}</h2>
+                                        <label class="categoriesLbl">${firebase.data().packs[event.currentTarget.getAttribute('roomid')].rounds[i].categories[j]}</label>
                                     `)
                                     for (let k = (5 * j); k < (j+1) * (firebase.data().packs[event.currentTarget.getAttribute('roomid')].rounds[i].questions.length / 7) - 1; k++) {
                                         document.getElementById('packQuestionForm').getElementsByTagName('main')[0].insertAdjacentHTML('beforeend', `
-                                        <h3>${firebase.data().packs[event.currentTarget.getAttribute('roomid')].rounds[i].questions[k]}</h3>
-                                        <button class="closeAnser">${firebase.data().packs[event.currentTarget.getAttribute('roomid')].rounds[i].answers[k]}</button>
+                                        <label class="qnLbl">${firebase.data().packs[event.currentTarget.getAttribute('roomid')].rounds[i].questions[k]}</label>
+                                        <button class="closeAnswer">${firebase.data().packs[event.currentTarget.getAttribute('roomid')].rounds[i].answers[k]}</button>
                                     `)
                                     }
                                     }
                                     }
+                                    Array.from(document.getElementsByClassName('closeAnswer')).forEach(element => element.addEventListener('click', this.onCloseAnswer))
                         break;
                     case 'pickPackBlock':
                                 document.getElementById('backToPackPick').style.display = 'block'
@@ -97,7 +98,13 @@ export default {
                     event.target.classList.remove('liked')
                 }
             },
-            // star: this.likedPack ? '/img/star.png' : '/img/starActive.png',
+            onCloseAnswer: function(event){
+                if (event.currentTarget.style.color !== 'white'){
+                    event.currentTarget.style.color = 'white'
+                } else {
+                    event.currentTarget.style.color = 'transparent'
+                }
+            },
             star: this.likedPack ? 'liked' : 'notLiked',
             likedPack: localStorage.getItem('likedPacks') ? JSON.parse(localStorage.getItem('likedPacks')).find(element => element == this.roomID) ? true : false : null,
             pickedPack: pickedPack,
@@ -160,6 +167,9 @@ export default {
     height: 55px;
     margin-left: 10%;
 }
+.packCategories{
+    scrollbar-width: none;
+}
 .nextRound{
     background: none;
     color: white;
@@ -175,6 +185,35 @@ export default {
     font-size: 24px;
     font-weight: bold;
     font-family: unset;
+}
+#packQuestionForm > main{
+    display: grid;
+}
+.roundsLbl{
+    place-self: center;
+    font-size: 3em;
+    margin-top: 3%;
+}
+.categoriesLbl{
+    place-self: center;
+    font-size: 2em;
+    margin-top: 2%;
+}
+.qnLbl{
+    margin-top: 1%;
+    margin-left: 5%;
+    font-size: 1.5em;
+}
+.closeAnswer{
+    border: none;
+    background: #2185A6;
+    width: max-content;
+    margin-top: 1%;
+    margin-left: 5%;
+    font-size: 1em;
+    color: transparent;
+    border-radius: 10px;
+    transition: .5s;
 }
 </style>
 

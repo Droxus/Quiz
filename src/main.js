@@ -14,7 +14,11 @@ Array.prototype.findLastIndex = function(callBack){
     let arr = this.slice()
     return arr.length - arr.reverse().findIndex(callBack)
 }
+
+document.querySelectorAll('img').forEach(element => element.setAttribute("draggable", false));
+
 document.getElementById('app').style.display = 'none'
+
 firebase.data().authFirebase()
 firebase.data().getPacksData()
 firebase.data().getGameRooms()
