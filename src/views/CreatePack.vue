@@ -598,6 +598,28 @@ export default {
                         Array.from(document.getElementsByClassName('wrongAnswerInputArea'))[i].value = arr[i]
                     }
                 }
+                let index = Array.from(currentInputPick.parentElement.getElementsByClassName('questions')).findIndex(element => element == currentInputPick)
+                if (index !== -1){
+                    if (mediaFiles.rounds[round-1] !== undefined){
+                        if (mediaFiles.rounds[round-1][index]){
+                            if (document.getElementsByClassName('fileMediaElement').length > 0){
+                                Array.from(document.getElementsByClassName('fileMediaElement')).forEach(element => element.remove())
+                            }
+                            switch (mediaFiles.rounds[round-1][index].type.slice(0, 5)) {
+                                case 'image':
+                                    document.getElementById('fileUploadBlock').insertAdjacentHTML('beforeend', `<img draggable="false" class="fileMediaElement" src="${window.URL.createObjectURL(mediaFiles.rounds[round-1][index])}" alt="photo" id="thisPhoto"></img>`)
+                                    break;
+                                case 'video':
+                                    document.getElementById('fileUploadBlock').insertAdjacentHTML('beforeend', `<video class="fileMediaElement" controls><source src="${window.URL.createObjectURL(mediaFiles.rounds[round-1][index])}"></video>`)
+                                    break;
+                                case 'audio':
+                                    document.getElementById('fileUploadBlock').insertAdjacentHTML('beforeend', `<audio class="fileMediaElement" controls><source src="${window.URL.createObjectURL(mediaFiles.rounds[round-1][index])}"></audio>`)
+                                    break;
+                            }
+                            document.getElementById('fileIcon').style.display = 'none'
+                        }
+                    }
+                }
             },
             onCloseQuestion: function(){
                 document.getElementById('makeQuestion').style.display = 'none'
@@ -610,8 +632,8 @@ export default {
                 document.getElementById('questionInputArea').value = ''
                 document.getElementById('answerInputArea').value = ''
                 document.getElementById('fileDropInp').value = ''
-                if (document.getElementById('fileDropInp').parentElement.getElementsByClassName('fileMediaElement').length > 0){
-                    document.getElementById('fileDropInp').parentElement.getElementsByClassName('fileMediaElement')[0].remove()
+                if (document.getElementsByClassName('fileMediaElement').length > 0){
+                    Array.from(document.getElementsByClassName('fileMediaElement')).forEach(element => element.remove())
                 }
                 Array.from(document.getElementsByClassName('wrongAnswerInputArea')).forEach(element => element.value = '')
             },
@@ -622,7 +644,7 @@ export default {
                     currentInputPick.firstElementChild.remove()
                 }
                 if (document.getElementById('questionInputArea').value !== '' && document.getElementById('answerInputArea').value !== ''){
-                    currentInputPick.insertAdjacentHTML('beforeend', `<img draggable="false" class="questionMark" src="/img/questionMark.png"></img>`)
+                    currentInputPick.insertAdjacentHTML('beforeend', `<img draggable="false" class="questionMark" src="img/questionMark.png"></img>`)
                 } else {
                     currentInputPick.insertAdjacentHTML('beforeend', `<img draggable="false" class="minusIcon" src="img/minus.png"></img>`)
                 }
@@ -634,8 +656,8 @@ export default {
                 document.getElementById('questionInputArea').value = ''
                 document.getElementById('answerInputArea').value = ''
                 document.getElementById('fileDropInp').value = ''
-                if (document.getElementById('fileDropInp').parentElement.getElementsByClassName('fileMediaElement').length > 0){
-                    document.getElementById('fileDropInp').parentElement.getElementsByClassName('fileMediaElement')[0].remove()
+                if (document.getElementsByClassName('fileMediaElement').length > 0){
+                    Array.from(document.getElementsByClassName('fileMediaElement')).forEach(element => element.remove())
                 }
                 Array.from(document.getElementsByClassName('wrongAnswerInputArea')).forEach(element => element.value = '')
             },
@@ -672,9 +694,9 @@ export default {
             },
             onFileLoad: function(event){
                 if (event.target.files[0] !== undefined){
-                    if (document.getElementById('fileDropInp').parentElement.getElementsByClassName('fileMediaElement').length > 0){
-                        document.getElementById('fileDropInp').parentElement.getElementsByClassName('fileMediaElement')[0].remove()
-                    }
+                if (document.getElementsByClassName('fileMediaElement').length > 0){
+                    Array.from(document.getElementsByClassName('fileMediaElement')).forEach(element => element.remove())
+                }
 
                     
                     switch (event.target.files[0].type.slice(0, 5)) {

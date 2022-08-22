@@ -122,6 +122,10 @@ header > div:nth-child(2) > *{
     overflow: scroll;
     scrollbar-width: none;
 }
+#allGames::-webkit-scrollbar{
+    width: 0;
+    display: none;
+}
 .gamesOnPick{
     display: grid;
     width: 100%;

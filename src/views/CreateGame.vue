@@ -183,6 +183,7 @@
     height: 100vh;
     overflow-y: scroll;
     overflow-x: hidden;
+    scrollbar-width: none;
 }
 #createGameHeader{
     display: grid;
@@ -224,6 +225,10 @@
     grid-template-columns: 100%;
     grid-auto-rows: 12vh;
     grid-gap: 2vh;
+}
+#createGame::-webkit-scrollbar{
+    width: 0;
+    display: none;
 }
 .packAtPickBlock{
     border: 1px solid black;

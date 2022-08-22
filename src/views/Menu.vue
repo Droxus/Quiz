@@ -42,6 +42,7 @@
 }
 #userMenuIcon{
     width: 64px;
+    height: 64px;
     border-radius: 50%;
     align-self: end;
     justify-self: center;
@@ -129,12 +130,8 @@ import firebase from '../firebase.js'
                 myIcon: firebase.data().myIcon,
                 onUserName: function(event){
                     let newUserName = event.target.value
-                    let currUserName = firebase.data().userName
-                    if (newUserName.length > 3){
-                        firebase.data().setUserName(newUserName)
-                    } else {
-                        event.target.value = currUserName
-                    }
+                    event.target.value = newUserName.slice(0, 12)
+                        firebase.data().setUserName(newUserName.slice(0, 12))   
                 },
                 changeIcon: function(){
                     document.getElementById('chooseAvatarInp').click()

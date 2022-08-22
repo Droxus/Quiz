@@ -892,10 +892,12 @@ export default {
 .playersNick{
     word-break: break-all;
     place-self: center;
+    color: #145367;
 }
 .playersPoints{
     word-break: break-all;
     place-self: center;
+    color: white;
 }
 #answerInp{
     background: transparent;
@@ -1135,6 +1137,7 @@ form > label{
     max-width: 100%;
     max-height: 100%;
     place-self: center;
+    border: 4px solid #145367;
 }
 @media screen and (max-device-width: 1024px) {
   #tableWithQuestions > * {
