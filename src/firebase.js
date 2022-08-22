@@ -56,7 +56,7 @@ let firebaseLoaded = 0
                 if (localPacks || packs){
                   do {
                     packID = Number(String(Math.pow(10, 4) * Math.random()).replace('.', 0).slice(0, 12))
-                  } while (Object.keys(packs).findIndex(id => id == packID) !== -1 && Object.keys(localPacks).findIndex(id => id == packID) !== -1)
+                  } while (Object.keys(Object.assign(packs, localPacks)).findIndex(id => id == packID) !== -1)
                 } else {
                     packID = Number(String(Math.pow(10, 4) * Math.random()).replace('.', 0).slice(0, 12))
                 }
@@ -67,29 +67,29 @@ let firebaseLoaded = 0
                     if (localPacks || packs){
                       do {
                         packID = Number(String(Math.pow(10, 4) * Math.random()).replace('.', 0).slice(0, 12))
-                      } while (localPacks ? Object.keys(localPacks).findIndex(id => id == packID) : -1 !== -1 && packs ? Object.keys(packs).findIndex(id => id == packID) : -1 !== -1)
+                      } while (Object.keys(Object.assign(packs, localPacks)).findIndex(id => id == packID) !== -1)
                     } else {
                         packID = Number(String(Math.pow(10, 4) * Math.random()).replace('.', 0).slice(0, 12))
                     }
                     obj.ID = packID
-                    obj = {
+                    let objLocal = {
                       [packID]: obj
                     }
-                    localStorage.setItem('localPacks', JSON.stringify(obj))
-              }
-              if (obj.rounds){
-                  for (let curRound = 0; curRound < obj.rounds.length; curRound++){
-                    let files = Array.from(obj.rounds[curRound].mediaFiles).filter(element => element !== '')
-                    if (files.length > 0){
-                      for (let i = 0; i < Array.from(obj.rounds[curRound].mediaFiles).length; i++){
-                        if (Array.from(obj.rounds[curRound].mediaFiles)[i].type !== undefined){
-                          uploadBytes(sRef(storage, `packs/${packID}/${curRound}/${i}`), Array.from(obj.rounds[curRound].mediaFiles)[i]).then((snapshot) => {
-                          })
+                    localStorage.setItem('localPacks', JSON.stringify(Object.assign(objLocal, localPacks)))
+                  }
+                  if (obj.rounds){
+                    for (let curRound = 0; curRound < obj.rounds.length; curRound++){
+                      let files = Array.from(obj.rounds[curRound].mediaFiles).filter(element => element !== '')
+                      if (files.length > 0){
+                        for (let i = 0; i < Array.from(obj.rounds[curRound].mediaFiles).length; i++){
+                          if (Array.from(obj.rounds[curRound].mediaFiles)[i].type !== undefined){
+                            uploadBytes(sRef(storage, `packs/${packID}/${curRound}/${i}`), Array.from(obj.rounds[curRound].mediaFiles)[i]).then((snapshot) => {
+                            })
+                          }
                         }
                       }
                     }
-                  }
-              }
+                }
               let likedPacks = Array.isArray(JSON.parse(localStorage.getItem('likedPacks'))) ? JSON.parse(localStorage.getItem('likedPacks')) : []
               likedPacks.push(packID)
               localStorage.setItem('likedPacks', JSON.stringify(likedPacks))

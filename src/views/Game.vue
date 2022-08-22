@@ -623,6 +623,7 @@ export default {
             },
             pickRandomQuestion: function(){
                 if (Array.from(document.getElementsByClassName('questionMark')).length > 0){
+                    document.getElementById('rightAnswerLbl').innerText = ''
                     let indexQnAnswer = Math.round(Math.random() * (Array.from(document.getElementsByClassName('questionMark')).length - 1))
                     for (let i = 0; i < Array.from(document.getElementsByClassName('qustions')).length; i++){
                         if (Array.from(document.getElementsByClassName('qustions'))[i].getElementsByClassName('questionMark')[0] !== undefined){

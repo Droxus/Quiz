@@ -316,6 +316,6 @@ export default {
             toJoin: false,
             isHost: false
         }
-    },
+    }
 }
 </script>
