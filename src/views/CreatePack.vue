@@ -199,7 +199,8 @@ footer{
     display: flex;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: end;
+    margin-bottom: 1%;
 }
 #saveBtn{
     width: 100vw;
@@ -227,7 +228,8 @@ footer{
 }
 .qnCreateIcons{
     max-height: 100%;
-    place-self: center;
+    justify-self: center;
+    align-self: end;
 }
 #fileUploadBlock{
   width:100%;
@@ -447,6 +449,7 @@ footer{
 }
 #fileIcon{
     max-height: 50%;
+    margin-bottom: 5%;
 }
 </style>
 

@@ -214,6 +214,7 @@ function onAnsweredBtn(){
                     if (document.getElementById('questionBlock').style.display !== 'none'){
                         firebase.data().onAnswer(false, indexAnswer)
                         document.getElementById('questionBlock').style.display = 'none'
+                        document.getElementById('answerLbl').innerText = ''
                         document.getElementById('tableWithQuestions').style.display = 'grid'
                     }
                     firebase.data().nextRound()
@@ -332,11 +333,16 @@ export default {
                         } else {
                             document.getElementById('tableWithQuestions').insertAdjacentHTML('beforeend', `<div class="category">Category ${i+1}</div>`)
                         }
-                        for (let j = 0; j < this.pickedGame.pickedPack.rounds[round].points.length; j++){
-                            document.getElementById('tableWithQuestions').insertAdjacentHTML('beforeend', `<div class="qustions"><img draggable="false" class="questionMark" src="img/questionMark.png" alt="?"></div>`)
+                        for (let j = 0; j < firebase.data().pickedGame.pickedPack.rounds[round].points.length; j++){
+                            let index = (i * firebase.data().pickedGame.pickedPack.rounds[round].points.length) + j
+                            if (firebase.data().pickedGame.pickedPack.rounds[round].questions[index] === "" && firebase.data().pickedGame.pickedPack.rounds[round].answers[index] === ""){
+                                document.getElementById('tableWithQuestions').insertAdjacentHTML('beforeend', `<div class="qustions"><img draggable="false" class="minus" src="img/minus.png" alt="-"></div>`)
+                            } else {
+                                document.getElementById('tableWithQuestions').insertAdjacentHTML('beforeend', `<div class="qustions"><img draggable="false" class="questionMark" src="img/questionMark.png" alt="?"></div>`)
+                            }
                         }
                     }
-                    Array.from(document.getElementsByClassName('qustions')).forEach(element => element.addEventListener('click', this.onQuestion))
+                    Array.from(document.getElementsByClassName('questionMark')).forEach(element => element.parentElement.addEventListener('click', this.onQuestion))
                 }
             },
             showGameInfo: function(){
@@ -442,6 +448,7 @@ export default {
                     if (document.getElementById('questionBlock').style.display !== 'none'){
                         firebase.data().onAnswer(false, indexAnswer)
                         document.getElementById('questionBlock').style.display = 'none'
+                        document.getElementById('answerLbl').innerText = ''
                         document.getElementById('tableWithQuestions').style.display = 'grid'
                         if (Array.from(document.getElementsByClassName('questionMark')).length > 0){
                             firebase.data().nextTurn()
@@ -456,6 +463,7 @@ export default {
                     if (document.getElementById('questionBlock').style.display !== 'none'){
                         firebase.data().onAnswer(false, indexAnswer)
                         document.getElementById('questionBlock').style.display = 'none'
+                        document.getElementById('answerLbl').innerText = ''
                         document.getElementById('tableWithQuestions').style.display = 'grid'
                     }
                     firebase.data().nextRound()
@@ -571,6 +579,7 @@ export default {
                     timerOnAnswer = setTimeout(onAnsweredBtn, firebase.data().pickedGame.timeOnGiveAnswer * 1000)
                     Array.from(document.getElementsByClassName('qustions'))[indexAnswer].removeEventListener('click', this.onQuestion)
                     Array.from(document.getElementsByClassName('qustions'))[indexAnswer].getElementsByClassName('questionMark')[0].remove()
+                    Array.from(document.getElementsByClassName('qustions'))[indexAnswer].insertAdjacentHTML('beforeend', `<img draggable="false" class="minus" src="img/minus.png" alt="-">`)
                 }
             },
             onGetQuestion: function(){
@@ -584,6 +593,7 @@ export default {
                         document.getElementById('timerForGame').innerText = timer
                     }, 1000)
                     document.getElementById('questionBlock').style.display = 'grid'
+                    document.getElementById('answerLbl').innerText = ''
                     document.getElementById('tableWithQuestions').style.display = 'none'
                     if (document.getElementById('chooseRightOrWrongAnswer')){
                         document.getElementById('chooseRightOrWrongAnswer').remove()
@@ -609,12 +619,14 @@ export default {
                     Array.from(document.getElementsByClassName('qustions'))[indexAnswer].removeEventListener('click', this.onQuestion)
                     if (Array.from(document.getElementsByClassName('qustions'))[indexAnswer].getElementsByClassName('questionMark')[0] !== undefined){
                         Array.from(document.getElementsByClassName('qustions'))[indexAnswer].getElementsByClassName('questionMark')[0].remove()
+                        Array.from(document.getElementsByClassName('qustions'))[indexAnswer].insertAdjacentHTML('beforeend', `<img draggable="false" class="minus" src="img/minus.png" alt="-">`)
                     }
                 }
             },
             nextTurn: function(){
                 if (Array.from(document.getElementsByClassName('questionMark')).length > 0){
                     document.getElementById('questionBlock').style.display = 'none'
+                    document.getElementById('answerLbl').innerText = ''
                     document.getElementById('tableWithQuestions').style.display = 'grid'
                     firebase.data().nextTurn()
                 } else {
@@ -671,6 +683,7 @@ export default {
                         Array.from(document.getElementsByClassName('qustions'))[indexAnswer].removeEventListener('click', this.onQuestion)
                         if (Array.from(document.getElementsByClassName('qustions'))[indexAnswer].getElementsByClassName('questionMark')[0]){
                             Array.from(document.getElementsByClassName('qustions'))[indexAnswer].getElementsByClassName('questionMark')[0].remove()
+                            Array.from(document.getElementsByClassName('qustions'))[indexAnswer].insertAdjacentHTML('beforeend', `<img draggable="false" class="minus" src="img/minus.png" alt="-">`)
                         }
                         } else {
                         }
@@ -816,6 +829,7 @@ export default {
     font-size: weight;
     width: 100vw;
     height: 100vh;
+    z-index: 999999999;
 }
 #announceWinnerBlock *{
     place-self: center;
